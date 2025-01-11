@@ -36,8 +36,10 @@ export const Board: React.FC<BoardProps> = ({
 
 
   useEffect(() => {
-    console.log('%cRENDER =============================', 'color: #0ff; font-size: 2rem');
+    console.log('%cRENDER =============================', 'color: #f0f; font-size: 2rem');
     console.log(destructionPending);
+    console.log(moveDownPending);
+    console.log(fillEmptyPending);
   });
 
 
@@ -100,7 +102,7 @@ export const Board: React.FC<BoardProps> = ({
   useEffect(() => {
 
     console.log('%cHANDLE DESTROY:' + destructionPending, 'color: #0ff; font-size: 2rem');
-    if(!matches.length || !destructionPending) {
+    if(!destructionPending) {
       return;
     }
 
@@ -118,6 +120,7 @@ export const Board: React.FC<BoardProps> = ({
     });
 
     setDestructionPending(false);
+    setMatches([]);
 
     setTimeout(() => {
       setMoveDownPending(true);
@@ -127,7 +130,7 @@ export const Board: React.FC<BoardProps> = ({
 
   useEffect(() => {
 
-    if(!matches.length || !moveDownPending) {
+    if(!moveDownPending) {
       return;
     }
 
@@ -146,9 +149,6 @@ export const Board: React.FC<BoardProps> = ({
           // cell.coordinates.y = -1;
         }
       });
-
-
-
 
       for(let x  in sortedDestroyedCells) {
         const cells = sortedDestroyedCells[x];
@@ -171,22 +171,21 @@ export const Board: React.FC<BoardProps> = ({
         });
       }
 
-      setMoveDownPending(false);
-      setTimeout(() => {
-        setFillEmptyPending(true);
-      }, globalDelay);
       return newGrid;
     });
 
     setMoveDownPending(false);
-    //  setGridAsReady();
     setTimeout(() => {
       setFillEmptyPending(true);
     }, globalDelay);
   }, [moveDownPending]);
 
   useEffect(() => {
+
     console.log('%cHANDLE FILL CELLS', 'color: #0ff; font-size: 2rem');
+    if(moveDownPending || !fillEmptyPending) {
+      return;
+    }
 
     setGrid((prevGrid) => {
       const newGrid = [...prevGrid];
@@ -210,7 +209,9 @@ export const Board: React.FC<BoardProps> = ({
     });
 
     setFillEmptyPending(false);
-    setGridAsReady();
+    setTimeout(() => {
+      handleMatches();
+    }, globalDelay);
 
   }, [fillEmptyPending]);
 
@@ -423,6 +424,9 @@ export const Board: React.FC<BoardProps> = ({
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   async function handleMatches() {
+
+    console.log('%cHANDLE MATCHES', 'color: #0ff; font-size: 2rem');
+
     const verticalMatches = getVerticalMatches();
     const horizontalMatches = getHorizontalMatches();
     const matches = [...horizontalMatches, ...verticalMatches];
@@ -463,7 +467,7 @@ export const Board: React.FC<BoardProps> = ({
 
   return (
     <div className="board">
-      {grid.length > 0 && (
+      {(grid.length > 0 || matches.length > 0) && (
        <div className="grid">
             {grid.map((descriptor, index) => {
                     return (

@@ -27,11 +27,11 @@ function App() {
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const handlePlay = () => {
-    // if (audioRef.current) {
-    //   audioRef.current.play().catch((error) => {
-    //     console.error("Autoplay bloqué : ", error);
-    //   });
-    // }
+    if (audioRef.current) {
+      audioRef.current.play().catch((error) => {
+        console.error("Autoplay bloqué : ", error);
+      });
+    }
   };
 
   return (

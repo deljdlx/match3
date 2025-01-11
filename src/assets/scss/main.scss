@@ -8,7 +8,7 @@
     --cell-move-duration: 300ms;
     --cell-move-down-duration: 500ms;
 
-    --global-delay: 800ms;
+    --global-delay: 300ms;
 }
 
 
@@ -79,7 +79,7 @@ body {
                 .cell--destroyed {
                     background-color: #ff0;
                     // transition: all var(--cell-destroy-duration) ease-in-out;
-                    transform: scale(0.5);
+                    transform: scale(4);
                     opacity: 0;
                     z-index: 100;
                 }
