@@ -1,7 +1,7 @@
 :root {
 
-    --board-grid-columns: 8;
-    --board-grid-rows: 12;
+    --board-grid-columns: 6;
+    --board-grid-rows: 8;
 
     --cell-size: 80px;
     --cell-destroy-duration: 500ms;
@@ -33,7 +33,7 @@ body {
 
         .board {
             margin: auto;
-            margin-top: 40px;
+            margin-top: 50px;
             border: solid 3px #f0f;
             position: relative;
             height: calc(var(--cell-size) * var(--board-grid-rows));
