@@ -35,7 +35,7 @@ export const Cell: React.FC<CellProps> = ({
       ].join(' ')}
     >
       <span className={'cell__sprite cell__sprite--'+descriptor.value}>
-        {descriptor.coordinates.x} - {descriptor.coordinates.y}
+        {/* {descriptor.coordinates.x} - {descriptor.coordinates.y} */}
       </span>
     </button>
   );

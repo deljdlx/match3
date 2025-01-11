@@ -204,17 +204,6 @@ export const Board: React.FC<BoardProps> = ({
         continue;
       }
 
-      // if (!horizontalChecked.includes(cellDescriptor.index)) {
-      //   const horizontalMatches = getHorizontalMatches(cellDescriptor);
-      //   horizontalMatches.forEach((cellDescriptor) => {
-      //     horizontalChecked.push(cellDescriptor.index);
-      //   });
-
-      //   if(horizontalMatches.length >= matchSize) {
-      //     matches.push(horizontalMatches);
-      //   }
-      // }
-
       if (!verticalChecked.includes(cellDescriptor.index)) {
         const verticalMatches = getVerticalMatch(cellDescriptor);
         verticalMatches.forEach((cellDescriptor) => {
@@ -270,73 +259,46 @@ export const Board: React.FC<BoardProps> = ({
 
   const handleCellDestroy = (match: CellDescriptor[]) => {
     match.forEach((cellDescriptor) => {
-
-
-      const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
-      const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
-      const matchHeight = matchBottom - matchTop + 1;
-
       setGrid((prevGrid) => {
-
-        // destroy cells
         const newGrid = [...prevGrid];
         newGrid[cellDescriptor.index] = {
           ...newGrid[cellDescriptor.index],
           isDestroyed: true,
-          coordinates: {
-            x: cellDescriptor.coordinates.x,
-            y: -1,
-          },
         };
-
-
-        // move cells down
-        // newGrid.forEach((cell) => {
-        //   if(
-        //     cell.coordinates.y < matchTop
-        //     && cell.coordinates.x === cellDescriptor.coordinates.x
-        //     && !cell.isDestroyed
-        //     && !cell.isMovingDown
-        //   ) {
-        //     cell.isMovingDown = true;
-        //     cell.coordinates.y += matchHeight;
-        //   }
-        // });
-
-
         return newGrid;
       });
     });
-
 
     setTimeout(() => {
       setGridAsReady();
     }, cellMoveDownDuration + 10);
   };
 
+  const moveDestroyedCells = () => {
+    setGrid((prevGrid) => {
+      const newGrid = [...prevGrid];
+      newGrid.forEach((cell) => {
+        if(cell.isDestroyed) {
+          cell.coordinates = {
+            x: cell.coordinates.x,
+            y: -1,
+          };
+        }
+      });
+
+      return newGrid;
+    });
+  };
+
+
   const moveCellsDown = (match: CellDescriptor[]) => {
     match.forEach((cellDescriptor) => {
-
-
       const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
       const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
       const matchHeight = matchBottom - matchTop + 1;
 
       setGrid((prevGrid) => {
-
-        // destroy cells
         const newGrid = [...prevGrid];
-        newGrid[cellDescriptor.index] = {
-          ...newGrid[cellDescriptor.index],
-          isDestroyed: true,
-          coordinates: {
-            x: cellDescriptor.coordinates.x,
-            y: -1,
-          },
-        };
-
-
-        // move cells down
         newGrid.forEach((cell) => {
           if(
             cell.coordinates.y < matchTop
@@ -349,10 +311,37 @@ export const Board: React.FC<BoardProps> = ({
           }
         });
 
-
         return newGrid;
       });
     });
+  };
+
+  const handleFillEmptyCells = () => {
+
+    setGrid((prevGrid) => {
+      const newGrid = [...prevGrid];
+      newGrid.forEach((cell) => {
+        if(cell.isDestroyed) {
+          const firstCell = getFirstCellOfColumn(cell.coordinates.x, newGrid);
+
+          cell.isDestroyed = false;
+          cell.value = generateRandomValue();
+
+          console.log('%cBoard.tsx :: 317 =============================', 'color: #f00; font-size: 1rem');
+          console.log(firstCell);
+
+          if(firstCell) {
+            cell.coordinates = {
+              x: cell.coordinates.x,
+              y: firstCell.coordinates.y - 1,
+            };
+          }
+        }
+      });
+
+      return newGrid;
+    });
+
   };
 
 
@@ -396,11 +385,23 @@ export const Board: React.FC<BoardProps> = ({
             moveCellsDown(match);
         }, cellMoveDuration + 100);
       });
+
+      setTimeout(() => {
+        moveDestroyedCells();
+
+        setTimeout(() => {
+          handleFillEmptyCells();
+        }, cellMoveDuration);
+
+      }, cellMoveDuration + cellMoveDownDuration + 10);
+
+
+
     }
 
 
     grid[firstCellIndex].isSelected = false;
-     setFirstCellIndex(undefined);
+    setFirstCellIndex(undefined);
   }
 
 

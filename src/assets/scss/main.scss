@@ -3,7 +3,7 @@
     --cell-destroy-duration: 500ms;
     --cell-move-duration: 300ms;
 
-    --cell-move-down-duration: 1000ms;
+    --cell-move-down-duration: 500ms;
 }
 
 
@@ -31,6 +31,7 @@ body {
             transition: all var(--cell-move-duration) ease-in-out;
 
             .cell__sprite {
+                animation: oscillate 2s infinite;
                 font-size: 1rem;
 
             }
@@ -52,8 +53,8 @@ body {
         .cell--destroyed {
             background-color: #ff0;
             transition: all var(--cell-destroy-duration) ease-in-out;
-            // transform: scale(4);
-            // opacity: 0;
+            transform: scale(4);
+            opacity: 0;
             z-index: -1;
         }
 
@@ -64,6 +65,24 @@ body {
         .cell--shared {
             border: solid 3px #f0f;
         }
+    }
 
+
+    @keyframes oscillate {
+        0% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(15deg); /* Inclinaison à droite */
+        }
+        50% {
+          transform: rotate(0deg); /* Retour au centre */
+        }
+        75% {
+          transform: rotate(-15deg); /* Inclinaison à gauche */
+        }
+        100% {
+          transform: rotate(0deg); /* Retour au centre */
+        }
     }
 }
