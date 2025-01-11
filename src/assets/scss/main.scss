@@ -1,0 +1,69 @@
+:root {
+    --cell-size: 80px;
+    --cell-destroy-duration: 500ms;
+    --cell-move-duration: 300ms;
+
+    --cell-move-down-duration: 500ms;
+}
+
+
+body {
+    background-color: #99d;
+
+    .grid {
+        // display: flex;
+        // justify-content: center;
+        position: relative;
+        margin-top: 100px;
+
+        .cell {
+            cursor: pointer;
+            position: absolute;
+            display: flex;
+            height: var(--cell-size);
+            width: var(--cell-size);
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #000;
+            background-color: #9aa;
+            border-radius: 5px;
+
+            transition: all var(--cell-move-duration) ease-in-out;
+
+            .cell__sprite {
+                font-size: 1rem;
+
+            }
+
+            $emojies: ('🐵','🦁','🐯','🐶','🐱','🐰','🐻','🐨','🐼','🐷');
+
+            @for $i from 1 through length($emojies) {
+                .cell__sprite--#{$i - 1}::before {
+                  content: nth($emojies, $i);
+                  font-size: 3rem;
+                }
+            }
+        }
+
+        .cell--moving-down {
+            transition: all var(--cell-move-down-duration) ease-in-out;
+        }
+
+        .cell--destroyed {
+            background-color: #ff0;
+            transition: all var(--cell-destroy-duration) ease-in-out;
+            transform: scale(3);
+            opacity: 0;
+            z-index: -1;
+        }
+
+        .cell--selected {
+            background-color: #f00;
+        }
+
+        .cell--shared {
+            border: solid 3px #f0f;
+        }
+
+    }
+}
