@@ -3,7 +3,7 @@
     --cell-destroy-duration: 500ms;
     --cell-move-duration: 300ms;
 
-    --cell-move-down-duration: 500ms;
+    --cell-move-down-duration: 1000ms;
 }
 
 
@@ -52,8 +52,8 @@ body {
         .cell--destroyed {
             background-color: #ff0;
             transition: all var(--cell-destroy-duration) ease-in-out;
-            transform: scale(3);
-            opacity: 0;
+            // transform: scale(4);
+            // opacity: 0;
             z-index: -1;
         }
 

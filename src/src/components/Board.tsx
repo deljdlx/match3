@@ -126,15 +126,43 @@ export const Board: React.FC<BoardProps> = ({
       }
     }
 
-
     return matches;
   };
 
+  const getVerticalMatch = (cell: CellDescriptor) => {
+    const matches: CellDescriptor[] = [cell];
+    const { x, y } = cell.coordinates;
+    const value = cell.value;
 
-  const getMatches = () => {
+    // check top
+    for (let i = y - 1; i >= 0; i--) {
+      const topCell = getCellByCoordinates({ x, y: i });
+      if (topCell?.value === value) {
+        matches.push(topCell);
+      } else {
+        break;
+      }
+    }
+
+    // check bottom
+    for (let i = y + 1; i < gridHeight; i++) {
+      const bottomCell = getCellByCoordinates({ x, y: i });
+      if (bottomCell?.value === value) {
+        matches.push(bottomCell);
+      } else {
+        break;
+      }
+    }
+
+    return matches;
+  }
+
+
+  const getVerticalMatches = () => {
     const matches: CellDescriptor[][] = [];
 
     const horizontalChecked: number[] = [];
+    const verticalChecked: number[]= [];
 
     for (let i = 0; i < grid.length; i++) {
       const cellDescriptor = grid[i];
@@ -142,14 +170,25 @@ export const Board: React.FC<BoardProps> = ({
         continue;
       }
 
-      if (!horizontalChecked.includes(cellDescriptor.index)) {
-        const horizontalMatches = getHorizontalMatches(cellDescriptor);
-        horizontalMatches.forEach((cellDescriptor) => {
-          horizontalChecked.push(cellDescriptor.index);
+      // if (!horizontalChecked.includes(cellDescriptor.index)) {
+      //   const horizontalMatches = getHorizontalMatches(cellDescriptor);
+      //   horizontalMatches.forEach((cellDescriptor) => {
+      //     horizontalChecked.push(cellDescriptor.index);
+      //   });
+
+      //   if(horizontalMatches.length >= matchSize) {
+      //     matches.push(horizontalMatches);
+      //   }
+      // }
+
+      if (!verticalChecked.includes(cellDescriptor.index)) {
+        const verticalMatches = getVerticalMatch(cellDescriptor);
+        verticalMatches.forEach((cellDescriptor) => {
+          verticalChecked.push(cellDescriptor.index);
         });
 
-        if(horizontalMatches.length >= matchSize) {
-          matches.push(horizontalMatches);
+        if(verticalMatches.length >= matchSize) {
+          matches.push(verticalMatches);
         }
       }
     }
@@ -171,17 +210,41 @@ export const Board: React.FC<BoardProps> = ({
   };
 
 
-  const handleCellDestroy = (cellDescriptors: CellDescriptor[]) => {
-    cellDescriptors.forEach((cellDescriptor) => {
+  const handleCellDestroy = (match: CellDescriptor[]) => {
+    match.forEach((cellDescriptor) => {
+
       setGrid((prevGrid) => {
         const newGrid = [...prevGrid];
         newGrid[cellDescriptor.index] = {
           ...newGrid[cellDescriptor.index],
           isDestroyed: true,
+          coordinates: {
+            x: cellDescriptor.coordinates.x,
+            y: -1,
+          },
         };
+
+        const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
+        const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
+        const matchHeight = matchBottom - matchTop + 1;
+
+        newGrid.forEach((cell) => {
+          if(
+            cell.coordinates.y < matchTop
+            && cell.coordinates.x === cellDescriptor.coordinates.x
+            && !cell.isDestroyed
+          ) {
+            cell.isMovingDown = true;
+            cell.coordinates.y += matchHeight;
+          }
+        });
+
+
         return newGrid;
       });
     });
+
+    setGridAsReady();
   };
 
 
@@ -203,12 +266,12 @@ export const Board: React.FC<BoardProps> = ({
       secondCell.coordinates = tempCoordinates;
 
 
-      const matches = getMatches();
-      if (matches.length > 0) {
-        matches.forEach((cellDescriptors) => {
+      const verticalMatches = getVerticalMatches();
+
+        verticalMatches.forEach((match) => {
 
           setTimeout(() => {
-            handleCellDestroy(cellDescriptors);
+            handleCellDestroy(match);
           }, cellMoveDuration + 10);
 
 
@@ -216,37 +279,49 @@ export const Board: React.FC<BoardProps> = ({
 
           setTimeout(() => {
 
-            cellDescriptors.forEach((cellDescriptor) => {
+            // match.forEach((cellDescriptor) => {
 
-              setGrid((prevGrid) => {
-                console.log('%cFUCK =============================', 'color: #f0f; font-size: 2rem');
+            //   setGrid((prevGrid) => {
 
-                const newGrid = [...prevGrid];
-                newGrid.forEach((cell) => {
+            //     const newGrid = [...prevGrid];
+            //     newGrid.forEach((cell) => {
 
 
-                    if(cell.coordinates.x === cellDescriptor.coordinates.x && cell.coordinates.y < cellDescriptor.coordinates.y && !cell.isMovingDown) {
-                      console.log(
-                        cell.coordinates.x + ':' + cell.coordinates.y + ' -> ' +
-                        cell.coordinates.x + ':' + (cell.coordinates.y + 1)
-                      );
-                      cell.coordinates.y += 1;
-                      cell.isMovingDown = true;
-                    }
+            //         if(cell.coordinates.x === cellDescriptor.coordinates.x && cell.coordinates.y < cellDescriptor.coordinates.y && !cell.isMovingDown) {
+            //           console.log(
+            //             cell.coordinates.x + ':' + cell.coordinates.y + ' -> ' +
+            //             cell.coordinates.x + ':' + (cell.coordinates.y + 1)
+            //           );
+            //           cell.coordinates.y += destroyedByX[cell.coordinates.x];
+            //           cell.isMovingDown = true;
+            //         }
 
-                });
-                console.log('%cExiting setGrid', 'color: #00f; font-size: 1rem');
-                return newGrid;
-              });
-              // setGridAsReady();
-            });
+            //     });
+
+            //     return newGrid;
+            //   });
+            //   // setGridAsReady();
+            // });
+
+
           }, cellMoveDuration+ cellDestroyDuration + 20);
 
           setTimeout(() => {
             setGridAsReady();
           }, cellMoveDuration + cellDestroyDuration + 30);
         });
-      }
+
+
+
+      setGrid((prevGrid) => {
+        const newGrid = [...prevGrid];
+
+
+
+        return newGrid;
+      });
+
+
     }
 
     grid[firstCellIndex].isSelected = false;
