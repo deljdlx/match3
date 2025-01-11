@@ -213,6 +213,11 @@ export const Board: React.FC<BoardProps> = ({
   const handleCellDestroy = (match: CellDescriptor[]) => {
     match.forEach((cellDescriptor) => {
 
+      const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
+      const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
+      const matchHeight = matchBottom - matchTop + 1;
+
+
       setGrid((prevGrid) => {
         const newGrid = [...prevGrid];
         newGrid[cellDescriptor.index] = {
@@ -224,10 +229,32 @@ export const Board: React.FC<BoardProps> = ({
           },
         };
 
-        const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
-        const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
-        const matchHeight = matchBottom - matchTop + 1;
+        // moveCellsDown(cellDescriptor, matchTop, matchHeight);
 
+        // newGrid.forEach((cell) => {
+        //   if(
+        //     cell.coordinates.y < matchTop
+        //     && cell.coordinates.x === cellDescriptor.coordinates.x
+        //     && !cell.isDestroyed
+        //   ) {
+        //     cell.isMovingDown = true;
+        //     cell.coordinates.y += matchHeight;
+        //   }
+        // });
+
+
+        return newGrid;
+      });
+    });
+
+    match.forEach((cellDescriptor) => {
+
+      const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
+      const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
+      const matchHeight = matchBottom - matchTop + 1;
+
+      setGrid((prevGrid) => {
+        const newGrid = [...prevGrid];
         newGrid.forEach((cell) => {
           if(
             cell.coordinates.y < matchTop
@@ -238,14 +265,30 @@ export const Board: React.FC<BoardProps> = ({
             cell.coordinates.y += matchHeight;
           }
         });
-
-
         return newGrid;
       });
     });
 
     setGridAsReady();
   };
+
+  // const handleCellMoveDown = (grid: CellDescriptor[], match: CellDescriptor[]) => {
+
+  //   const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
+  //   const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
+  //   const matchHeight = matchBottom - matchTop + 1;
+
+  //   grid.forEach((cell) => {
+  //     if(
+  //       cell.coordinates.y < matchTop
+  //       && cell.coordinates.x === cellDescriptor.coordinates.x
+  //       && !cell.isDestroyed
+  //     ) {
+  //       cell.isMovingDown = true;
+  //       cell.coordinates.y += matchHeight;
+  //     }
+  //   });
+  // };
 
 
   const handleClick = (index: number, cellDescriptor: CellDescriptor) => {
