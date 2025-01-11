@@ -49,63 +49,6 @@ export const Board: React.FC<BoardProps> = ({
     console.log(fillEmptyPending);
   });
 
-
-  // useEffect(() => {
-  //   const cells = [];
-  //   let index = 0;
-  //   let lastValue = -1;
-
-  //   for (let i = 0; i < gridHeight; i++) {
-  //       const row: CellDescriptor[] = [];
-  //       for (let j = 0; j < gridWidth; j++) {
-
-  //         const cellDescriptor: CellDescriptor = createCellDescriptor(index);
-  //         cellDescriptor.coordinates = {
-  //           x: j,
-  //           y: i,
-  //         };
-
-  //         const notIn: number[] = [];
-  //         notIn.push(lastValue);
-  //         // try to get above cell
-  //         const aboveCell = cells[index - gridWidth] || null;
-  //         if(aboveCell) {
-  //           notIn.push(aboveCell.value);
-  //         }
-
-  //         let newValue = generateRandomValue(notIn);
-  //         cellDescriptor.value = newValue;
-  //         lastValue = newValue;
-
-  //         cells.push(cellDescriptor);
-
-  //         index++;
-  //       }
-  //   }
-  //   setGrid(cells);
-
-  //   // =================================================================
-
-
-  //   const rootStyles = getComputedStyle(document.documentElement);
-  //   const cellSize = rootStyles.getPropertyValue("--cell-size").trim();
-  //   setCellSize(parseInt(cellSize, 10));
-
-  //   const cellMoveDuration = rootStyles.getPropertyValue("--cell-move-duration").trim();
-  //   setCellMoveDuration(parseInt(cellMoveDuration, 10));
-
-  //   const cellDestroyDuration = rootStyles.getPropertyValue("--cell-destroy-duration").trim();
-  //   setCellDestroyDuration(parseInt(cellDestroyDuration, 10));
-
-  //   setCellMoveDownDuration(parseInt(
-  //     rootStyles.getPropertyValue("--cell-move-down-duration").trim(), 10)
-  //   );
-  //   setGlobalDelay(parseInt(
-  //     rootStyles.getPropertyValue("--global-delay").trim()
-  //   ));
-  // }, []);
-
-
   useEffect(() => {
 
     console.log('%cHANDLE DESTROY:' + destructionPending, 'color: #0ff; font-size: 2rem');
