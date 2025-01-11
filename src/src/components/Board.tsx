@@ -283,10 +283,6 @@ export const Board: React.FC<BoardProps> = ({
         return newGrid;
       });
     });
-
-    setTimeout(() => {
-      setGridAsReady();
-    }, cellMoveDownDuration + 10);
   };
 
   const moveDestroyedCells = () => {
@@ -300,7 +296,6 @@ export const Board: React.FC<BoardProps> = ({
           };
         }
       });
-
       return newGrid;
     });
   };
@@ -342,9 +337,6 @@ export const Board: React.FC<BoardProps> = ({
           cell.isDestroyed = false;
           cell.value = generateRandomValue();
 
-          console.log('%cBoard.tsx :: 317 =============================', 'color: #f00; font-size: 1rem');
-          console.log(firstCell);
-
           if(firstCell) {
             cell.coordinates = {
               x: cell.coordinates.x,
@@ -356,32 +348,61 @@ export const Board: React.FC<BoardProps> = ({
 
       return newGrid;
     });
-
   };
 
 
   const handleMatches = () => {
+    // const verticalMatches = getVerticalMatches();
+    // verticalMatches.forEach((match) => {
+    //   setTimeout(() => {
+    //     handleCellDestroy(match);
+    //   }, cellMoveDuration + 10);
+
+    //   setTimeout(() => {
+    //     setGridAsReady();
+    //     moveCellsDown(match);
+    //     setTimeout(() => {
+    //     }, cellMoveDownDuration + 10);
+    //   }, cellMoveDuration + 100);
+    // });
+
     const verticalMatches = getVerticalMatches();
+    let timeout = 0;
     verticalMatches.forEach((match) => {
       setTimeout(() => {
         handleCellDestroy(match);
-      }, cellMoveDuration + 10);
 
-      setTimeout(() => {
-        moveCellsDown(match);
-      }, cellMoveDuration + 100);
+        setTimeout(() => {
+          moveCellsDown(match);
+          setTimeout(() => {
+            handleFillEmptyCells();
+           }, 300);
+        }, 100);
+
+        setGridAsReady();
+      }, timeout);
+      timeout +=150;
     });
 
+
+    timeout = 0;
     const horizontalMatches = getHorizontalMatches();
     horizontalMatches.forEach((match) => {
       setTimeout(() => {
         handleCellDestroy(match);
-      }, cellMoveDuration + 10);
 
-      setTimeout(() => {
+        setTimeout(() => {
           moveCellsDown(match);
-      }, cellMoveDuration + 100);
+          setTimeout(() => {
+            handleFillEmptyCells();
+           }, 300);
+        }, 100);
+
+        setGridAsReady();
+      }, timeout);
+      timeout +=150;
     });
+
   };
 
 
@@ -393,8 +414,7 @@ export const Board: React.FC<BoardProps> = ({
         return;
     }
 
-
-    if(areAdjacent(firstCellIndex, index)) {
+    if(areAdjacent(firstCellIndex, index) || 1) {
       const firstCell = grid[firstCellIndex];
       const secondCell = grid[index];
 
@@ -404,40 +424,14 @@ export const Board: React.FC<BoardProps> = ({
 
       handleMatches();
 
-
-      // const verticalMatches = getVerticalMatches();
-      // verticalMatches.forEach((match) => {
-      //   setTimeout(() => {
-      //     handleCellDestroy(match);
-      //   }, cellMoveDuration + 10);
-
-      //   setTimeout(() => {
-      //     moveCellsDown(match);
-      //   }, cellMoveDuration + 100);
-      // });
-
-      // const horizontalMatches = getHorizontalMatches();
-      // horizontalMatches.forEach((match) => {
-      //   setTimeout(() => {
-      //     handleCellDestroy(match);
-      //   }, cellMoveDuration + 10);
-
-      //   setTimeout(() => {
-      //       moveCellsDown(match);
-      //   }, cellMoveDuration + 100);
-      // });
-
       setTimeout(() => {
-        moveDestroyedCells();
+        // moveDestroyedCells();
 
-        setTimeout(() => {
-          handleFillEmptyCells();
-        }, cellMoveDuration);
+        // setTimeout(() => {
+        //   handleFillEmptyCells();
+        // }, cellMoveDuration);
 
       }, cellMoveDuration + cellMoveDownDuration + 10);
-
-
-
     }
 
 
