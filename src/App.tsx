@@ -7,7 +7,7 @@ import "./assets/scss/main.scss"; // Chemin vers ton fichier SCSS
 function App() {
 
   const [gridWidth, setGridWidth] = useState<number>(10);
-  const [gridHeight, setGridHeight] = useState<number>(15);
+  const [gridHeight, setGridHeight] = useState<number>(10);
 
 
 

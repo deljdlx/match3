@@ -212,6 +212,12 @@ export const Board: React.FC<BoardProps> = ({
 
   const handleCellDestroy = (match: CellDescriptor[]) => {
     match.forEach((cellDescriptor) => {
+
+
+      const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
+      const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
+      const matchHeight = matchBottom - matchTop + 1;
+
       setGrid((prevGrid) => {
         const newGrid = [...prevGrid];
         newGrid[cellDescriptor.index] = {
@@ -222,12 +228,30 @@ export const Board: React.FC<BoardProps> = ({
             y: -1,
           },
         };
+
+
+
+        newGrid.forEach((cell) => {
+          if(
+            cell.coordinates.y < matchTop
+            && cell.coordinates.x === cellDescriptor.coordinates.x
+            && !cell.isDestroyed
+            && !cell.isMovingDown
+          ) {
+            cell.isMovingDown = true;
+            cell.coordinates.y += matchHeight;
+          }
+        });
+
+
         return newGrid;
       });
     });
 
-    moveCellsDown(match);
-    setGridAsReady();
+    // moveCellsDown(match);
+    setTimeout(() => {
+      setGridAsReady();
+    }, cellMoveDownDuration + 10);
   };
 
   const moveCellsDown = (match: CellDescriptor[]) => {
