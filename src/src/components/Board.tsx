@@ -3,6 +3,7 @@ import { CellDescriptor } from "../types/CellDescriptor";
 
 import { Cell } from "./Cell";
 
+
 type BoardProps = {
     gridWidth: number;
     gridHeight: number;

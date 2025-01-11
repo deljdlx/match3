@@ -1,5 +1,9 @@
-import React, {useEffect} from "react";
+import React from "react";
 import { CellDescriptor } from "../types/CellDescriptor";
+
+
+import clickSound from "../../assets/sounds/effects/magic-fairy.mp3";
+
 
 type CellProps = {
   descriptor: CellDescriptor;
@@ -14,29 +18,44 @@ export const Cell: React.FC<CellProps> = ({
     cellSize,
   }) => {
 
+    const audioRef = React.createRef<HTMLAudioElement>();
 
   const handleClick = () => {
-    // const newValue = value + 1;
+
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0; // Redémarre le son si déjà en cours
+      audioRef.current.play();
+    }
+
+
     onClick(descriptor);
   };
 
   return (
-    <button
-      onClick={handleClick}
-      style={{
-        left: `${descriptor.coordinates.x * cellSize}px`,
-        top: `${descriptor.coordinates.y * cellSize}px`,
-      }}
-      className={[
-        "cell",
-        descriptor.isSelected ? 'cell--selected' : '',
-        descriptor.isDestroyed ? 'cell--destroyed' : '',
-        descriptor.isMovingDown ? 'cell--moving-down' : '',
-      ].join(' ')}
-    >
-      <span className={'cell__sprite cell__sprite--'+descriptor.value}>
-        {/* {descriptor.coordinates.x} - {descriptor.coordinates.y} */}
-      </span>
-    </button>
+    <>
+
+      <audio ref={audioRef}>
+        <source src={clickSound} type="audio/mpeg" />
+      </audio>
+
+
+      <button
+        onClick={handleClick}
+        style={{
+          left: `${descriptor.coordinates.x * cellSize}px`,
+          top: `${descriptor.coordinates.y * cellSize}px`,
+        }}
+        className={[
+          "cell",
+          descriptor.isSelected ? 'cell--selected' : '',
+          descriptor.isDestroyed ? 'cell--destroyed' : '',
+          descriptor.isMovingDown ? 'cell--moving-down' : '',
+        ].join(' ')}
+      >
+        <span className={'cell__sprite cell__sprite--'+descriptor.value}>
+          {/* {descriptor.coordinates.x} - {descriptor.coordinates.y} */}
+        </span>
+      </button>
+    </>
   );
 };
