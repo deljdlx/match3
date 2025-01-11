@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-import {useInitializeBoard} from "../hooks/useInitializeBoard";
+import {useInitializeBoard} from "./hooks/useInitializeBoard";
 
-import { CellDescriptor } from "../types/CellDescriptor";
+import { CellDescriptor } from "../../types/CellDescriptor";
 
-import { Cell } from "./Cell";
+import { Cell } from "../Cell/Cell";
 
 
 type BoardProps = {

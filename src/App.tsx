@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef  } from "react";
-import { Board } from "./src/components/Board";
+import { Board } from "./src/components/Board/Board";
 
 
 import "./assets/scss/main.scss"; // Chemin vers ton fichier SCSS

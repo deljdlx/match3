@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CellDescriptor } from "../types/CellDescriptor";
+import { CellDescriptor } from "../../../types/CellDescriptor";
 
 export function useInitializeBoard(gridWidth: number, gridHeight: number, possibleValues: number) {
   const [grid, setGrid] = useState<CellDescriptor[]>([]);
