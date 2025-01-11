@@ -28,6 +28,8 @@ export const Board: React.FC<BoardProps> = ({
   useEffect(() => {
     const cells = [];
     let index = 0;
+    let lastValue = -1;
+
     for (let i = 0; i < gridHeight; i++) {
         const row: CellDescriptor[] = [];
         for (let j = 0; j < gridWidth; j++) {
@@ -38,7 +40,18 @@ export const Board: React.FC<BoardProps> = ({
             y: i,
           };
 
-          cellDescriptor.value = generateRandomValue();
+          const notIn: number[] = [];
+          notIn.push(lastValue);
+          // try to get above cell
+          const aboveCell = cells[index - gridWidth] || null;
+          if(aboveCell) {
+            notIn.push(aboveCell.value);
+          }
+
+          let newValue = generateRandomValue(notIn);
+          cellDescriptor.value = newValue;
+          lastValue = newValue;
+
           cells.push(cellDescriptor);
 
           index++;
@@ -80,8 +93,12 @@ export const Board: React.FC<BoardProps> = ({
     };
   }
 
-  const generateRandomValue = (): number => {
-    return Math.floor(Math.random() * possibleValues);
+  const generateRandomValue = (notIn: number[] = []): number => {
+    let value = Math.floor(Math.random() * possibleValues);
+    while (notIn.includes(value)) {
+      value = Math.floor(Math.random() * possibleValues);
+    }
+    return value;
   }
 
   const areAdjacent = (index1: number, index2: number) => {
