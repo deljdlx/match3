@@ -133,36 +133,48 @@ export const Board: React.FC<BoardProps> = ({
 
     console.log('%cHANDLE MOVE DOWN', 'color: #0ff; font-size: 2rem');
     setGrid((prevGrid) => {
-      const newGrid = [...prevGrid];
-      matches.forEach((match) => {
-        const matchBottom = Math.max(...match.map((cell) => cell.coordinates.y));
-        const matchTop = Math.min(...match.map((cell) => cell.coordinates.y));
-        const matchHeight = matchBottom - matchTop + 1;
 
+      const newGrid = [...prevGrid].map((cell) => ({ ...cell }));
 
+      const sortedDestroyedCells: {[key: number]: CellDescriptor[]} = {};
 
-        let handledColumns: { [key: number]: boolean } = {};
-
-        match.forEach((cellDescriptor) => {
-          const cellsAbove = getCellsAbove(cellDescriptor, grid);
-          console.log('%cBoard.tsx :: 119 =============================', 'color: #f00; font-size: 1rem');
-          console.log(cellDescriptor.coordinates.x);
-          console.log(cellsAbove);
-
-          if(!handledColumns[cellDescriptor.coordinates.x]) {
-            cellsAbove.forEach((cell) => {
-              const newCell = grid[cell.index];
-
-              console.log('%cBoard.tsx :: 124 =============================', 'color: #f00; font-size: 1rem');
-              console.log('Moving down cell: ' + cell.coordinates.x + ' - ' + cell.coordinates.y +
-                ' to ' +  (cell.coordinates.y + matchHeight)
-              );
-              newCell.coordinates.y += matchHeight;
-              handledColumns[cell.coordinates.x] = true;
-            });
-          }
-        });
+      newGrid.forEach((cell) => {
+        if(cell.isDestroyed) {
+          const clonedCell = { ...cell };
+          sortedDestroyedCells[clonedCell.coordinates.x] = sortedDestroyedCells[clonedCell.coordinates.x] || [];
+          sortedDestroyedCells[clonedCell.coordinates.x].push(clonedCell);
+          // cell.coordinates.y = -1;
+        }
       });
+
+
+
+
+      for(let x  in sortedDestroyedCells) {
+        const cells = sortedDestroyedCells[x];
+        cells.sort((a, b) => a.coordinates.y - b.coordinates.y);
+      }
+
+      console.log('%cBoard.tsx :: 148 =============================', 'color: #f00; font-size: 1rem');
+      console.log(sortedDestroyedCells);
+
+      for(let x in sortedDestroyedCells) {
+        const cells = sortedDestroyedCells[x];
+        cells.forEach((cell, i) => {
+          const cellsAbove = getCellsAbove(cell, newGrid);
+          cellsAbove.forEach((cellAbove) => {
+            newGrid[cellAbove.index].coordinates = {
+              x: cellAbove.coordinates.x,
+              y: cellAbove.coordinates.y + 1,
+            };
+          });
+        });
+      }
+
+      setMoveDownPending(false);
+      setTimeout(() => {
+        setFillEmptyPending(true);
+      }, globalDelay);
       return newGrid;
     });
 
@@ -175,18 +187,6 @@ export const Board: React.FC<BoardProps> = ({
 
   useEffect(() => {
     console.log('%cHANDLE FILL CELLS', 'color: #0ff; font-size: 2rem');
-    setDestructionPending(false);
-    setMoveDownPending(false);
-    setMatches([]);
-
-    if(!matches.length) {
-      return;
-    }
-
-
-
-
-    return;
 
     setGrid((prevGrid) => {
       const newGrid = [...prevGrid];
@@ -246,8 +246,9 @@ export const Board: React.FC<BoardProps> = ({
       && Math.abs(coordinates1.y - coordinates2.y) <= 1;
   }
 
-  const getCellByCoordinates = (coordinates: {x: number, y: number}) => {
-    return grid.find((cell) => {
+  const getCellByCoordinates = (coordinates: {x: number, y: number}, newGrid: CellDescriptor[] | null = null) => {
+    newGrid = newGrid || grid;
+    return newGrid.find((cell) => {
       return cell.coordinates.x === coordinates.x
         && cell.coordinates.y === coordinates.y
     });
@@ -278,14 +279,18 @@ export const Board: React.FC<BoardProps> = ({
         cellDescriptor.coordinates.x === cell.coordinates.x
         && cellDescriptor.coordinates.y < cell.coordinates.y
         && !cellDescriptor.isDestroyed
-        // && !cellDescriptor.isMovingDown
       ) {
         cells.push(cellDescriptor);
       }
     });
 
+    // sort by y
+    cells.sort((a, b) =>  b.coordinates.y - a.coordinates.y);
+
     return cells;
   }
+
+
 
   const getHorizontalMatch = (cell: CellDescriptor) => {
     const matches: CellDescriptor[] = [cell];
@@ -420,7 +425,7 @@ export const Board: React.FC<BoardProps> = ({
   async function handleMatches() {
     const verticalMatches = getVerticalMatches();
     const horizontalMatches = getHorizontalMatches();
-    const matches = [...verticalMatches, ...horizontalMatches];
+    const matches = [...horizontalMatches, ...verticalMatches];
     if(matches.length) {
       console.log(matches);
       setMatches(matches);
