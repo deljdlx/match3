@@ -352,57 +352,30 @@ export const Board: React.FC<BoardProps> = ({
 
 
   const handleMatches = () => {
-    // const verticalMatches = getVerticalMatches();
-    // verticalMatches.forEach((match) => {
-    //   setTimeout(() => {
-    //     handleCellDestroy(match);
-    //   }, cellMoveDuration + 10);
-
-    //   setTimeout(() => {
-    //     setGridAsReady();
-    //     moveCellsDown(match);
-    //     setTimeout(() => {
-    //     }, cellMoveDownDuration + 10);
-    //   }, cellMoveDuration + 100);
-    // });
 
     const verticalMatches = getVerticalMatches();
-    let timeout = 0;
-    verticalMatches.forEach((match) => {
-      setTimeout(() => {
-        handleCellDestroy(match);
-
-        setTimeout(() => {
-          moveCellsDown(match);
-          setTimeout(() => {
-            handleFillEmptyCells();
-           }, 300);
-        }, 100);
-
-        setGridAsReady();
-      }, timeout);
-      timeout +=150;
-    });
-
-
-    timeout = 0;
     const horizontalMatches = getHorizontalMatches();
-    horizontalMatches.forEach((match) => {
+
+    const matches = [...verticalMatches, ...horizontalMatches];
+    let timeout = 0;
+    matches.forEach((match) => {
       setTimeout(() => {
         handleCellDestroy(match);
-
         setTimeout(() => {
           moveCellsDown(match);
           setTimeout(() => {
             handleFillEmptyCells();
-           }, 300);
+            if(getVerticalMatches() || getHorizontalMatches()) {
+              setTimeout(() => {
+                handleMatches();
+              }, 150);
+            }
+           }, 150);
         }, 100);
-
         setGridAsReady();
       }, timeout);
       timeout +=150;
     });
-
   };
 
 
