@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+
+import {useInitializeBoard} from "../hooks/useInitializeBoard";
+
 import { CellDescriptor } from "../types/CellDescriptor";
 
 import { Cell } from "./Cell";
@@ -19,15 +22,18 @@ export const Board: React.FC<BoardProps> = ({
     matchSize,
 }) => {
 
+  const { grid, setGrid, styles } = useInitializeBoard(gridWidth, gridHeight, possibleValues);
+
   const [globalDelay, setGlobalDelay] = useState<number>(300);
 
 
-  const [cellSize, setCellSize] = useState<number>(50);
-  const [cellMoveDuration, setCellMoveDuration] = useState<number>(300);
-  const [cellDestroyDuration, setCellDestroyDuration] = useState<number>(500);
-  const [cellMoveDownDuration, setCellMoveDownDuration] = useState<number>(300);
+  // const [grid, setGrid] = useState<CellDescriptor[]>([]);
+  // const [cellSize, setCellSize] = useState<number>(50);
+  // const [cellMoveDuration, setCellMoveDuration] = useState<number>(300);
+  // const [cellDestroyDuration, setCellDestroyDuration] = useState<number>(500);
+  // const [cellMoveDownDuration, setCellMoveDownDuration] = useState<number>(300);
+
   const [firstCellIndex, setFirstCellIndex] = useState<number | undefined>();
-  const [grid, setGrid] = useState<CellDescriptor[]>([]);
 
   const [matches, setMatches] = useState<CellDescriptor[][]>([]);
 
@@ -44,60 +50,60 @@ export const Board: React.FC<BoardProps> = ({
   });
 
 
-  useEffect(() => {
-    const cells = [];
-    let index = 0;
-    let lastValue = -1;
+  // useEffect(() => {
+  //   const cells = [];
+  //   let index = 0;
+  //   let lastValue = -1;
 
-    for (let i = 0; i < gridHeight; i++) {
-        const row: CellDescriptor[] = [];
-        for (let j = 0; j < gridWidth; j++) {
+  //   for (let i = 0; i < gridHeight; i++) {
+  //       const row: CellDescriptor[] = [];
+  //       for (let j = 0; j < gridWidth; j++) {
 
-          const cellDescriptor: CellDescriptor = createCellDescriptor(index);
-          cellDescriptor.coordinates = {
-            x: j,
-            y: i,
-          };
+  //         const cellDescriptor: CellDescriptor = createCellDescriptor(index);
+  //         cellDescriptor.coordinates = {
+  //           x: j,
+  //           y: i,
+  //         };
 
-          const notIn: number[] = [];
-          notIn.push(lastValue);
-          // try to get above cell
-          const aboveCell = cells[index - gridWidth] || null;
-          if(aboveCell) {
-            notIn.push(aboveCell.value);
-          }
+  //         const notIn: number[] = [];
+  //         notIn.push(lastValue);
+  //         // try to get above cell
+  //         const aboveCell = cells[index - gridWidth] || null;
+  //         if(aboveCell) {
+  //           notIn.push(aboveCell.value);
+  //         }
 
-          let newValue = generateRandomValue(notIn);
-          cellDescriptor.value = newValue;
-          lastValue = newValue;
+  //         let newValue = generateRandomValue(notIn);
+  //         cellDescriptor.value = newValue;
+  //         lastValue = newValue;
 
-          cells.push(cellDescriptor);
+  //         cells.push(cellDescriptor);
 
-          index++;
-        }
-    }
-    setGrid(cells);
+  //         index++;
+  //       }
+  //   }
+  //   setGrid(cells);
 
-    // =================================================================
+  //   // =================================================================
 
 
-    const rootStyles = getComputedStyle(document.documentElement);
-    const cellSize = rootStyles.getPropertyValue("--cell-size").trim();
-    setCellSize(parseInt(cellSize, 10));
+  //   const rootStyles = getComputedStyle(document.documentElement);
+  //   const cellSize = rootStyles.getPropertyValue("--cell-size").trim();
+  //   setCellSize(parseInt(cellSize, 10));
 
-    const cellMoveDuration = rootStyles.getPropertyValue("--cell-move-duration").trim();
-    setCellMoveDuration(parseInt(cellMoveDuration, 10));
+  //   const cellMoveDuration = rootStyles.getPropertyValue("--cell-move-duration").trim();
+  //   setCellMoveDuration(parseInt(cellMoveDuration, 10));
 
-    const cellDestroyDuration = rootStyles.getPropertyValue("--cell-destroy-duration").trim();
-    setCellDestroyDuration(parseInt(cellDestroyDuration, 10));
+  //   const cellDestroyDuration = rootStyles.getPropertyValue("--cell-destroy-duration").trim();
+  //   setCellDestroyDuration(parseInt(cellDestroyDuration, 10));
 
-    setCellMoveDownDuration(parseInt(
-      rootStyles.getPropertyValue("--cell-move-down-duration").trim(), 10)
-    );
-    setGlobalDelay(parseInt(
-      rootStyles.getPropertyValue("--global-delay").trim()
-    ));
-  }, []);
+  //   setCellMoveDownDuration(parseInt(
+  //     rootStyles.getPropertyValue("--cell-move-down-duration").trim(), 10)
+  //   );
+  //   setGlobalDelay(parseInt(
+  //     rootStyles.getPropertyValue("--global-delay").trim()
+  //   ));
+  // }, []);
 
 
   useEffect(() => {
@@ -475,7 +481,7 @@ export const Board: React.FC<BoardProps> = ({
                         <Cell
                             key={index}
                             descriptor={descriptor}
-                            cellSize={cellSize}
+                            cellSize={styles.cellSize}
                             onClick={(cellDescriptor) => handleClick(index, cellDescriptor)}
                         />
                     );
