@@ -1,88 +1,112 @@
 :root {
+
+    --board-grid-columns: 8;
+    --board-grid-rows: 12;
+
     --cell-size: 80px;
     --cell-destroy-duration: 500ms;
     --cell-move-duration: 300ms;
-
     --cell-move-down-duration: 500ms;
 }
 
 
 body {
     background-color: #99d;
-
-    .grid {
-        // display: flex;
+    .application {
+        display: flex;
+        flex-direction: column;
         // justify-content: center;
+        // align-items: center;
         position: relative;
-        margin-top: 100px;
+        height: 100vh;
+        height: calc(var(--cell-size) * var(--board-grid-rows));
+        width: calc(var(--cell-size) * var(--board-grid-columns));
+        margin: auto;
 
-        .cell {
-            cursor: pointer;
-            position: absolute;
-            display: flex;
-            height: var(--cell-size);
-            width: var(--cell-size);
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #000;
-            background-color: #9aa;
-            border-radius: 5px;
+        .audio-player {
+            text-align: center;
+        }
 
-            transition: all var(--cell-move-duration) ease-in-out;
+        .board {
+            margin: auto;
+            margin-top: 40px;
+            border: solid 3px #f0f;
+            position: relative;
+            height: calc(var(--cell-size) * var(--board-grid-rows));
+            width: calc(var(--cell-size) * var(--board-grid-columns));
 
-            .cell__sprite {
-                animation: oscillate 2s infinite;
-                font-size: 1rem;
+            .grid {
+                position: relative;
 
-            }
+                .cell {
+                    cursor: pointer;
+                    position: absolute;
+                    display: flex;
+                    height: var(--cell-size);
+                    width: var(--cell-size);
+                    justify-content: center;
+                    align-items: center;
+                    border: 1px solid #000;
+                    background-color: #9aa;
+                    border-radius: 5px;
 
-            $emojies: ('🐵','🦁','🐯','🐶','🐱','🐰','🐻','🐨','🐼','🐷');
+                    transition: all var(--cell-move-duration) ease-in-out;
 
-            @for $i from 1 through length($emojies) {
-                .cell__sprite--#{$i - 1}::before {
-                  content: nth($emojies, $i);
-                  font-size: 3rem;
+                    .cell__sprite {
+                        animation: oscillate 2s infinite;
+                        font-size: 1rem;
+
+                    }
+
+                    $emojies: ('🐵','🦁','🐯','🐶','🐱','🐰','🐻','🐨','🐼','🐷');
+
+                    @for $i from 1 through length($emojies) {
+                        .cell__sprite--#{$i - 1}::before {
+                        content: nth($emojies, $i);
+                        font-size: 3rem;
+                        }
+                    }
+                }
+
+                .cell--moving-down {
+                    transition: all var(--cell-move-down-duration) ease-in-out;
+                }
+
+                .cell--destroyed {
+                    background-color: #ff0;
+                    transition: all var(--cell-destroy-duration) ease-in-out;
+                    transform: scale(4);
+                    opacity: 0;
+                    z-index: -1;
+                }
+
+                .cell--selected {
+                    background-color: #f00;
+                }
+
+                .cell--shared {
+                    border: solid 3px #f0f;
                 }
             }
-        }
-
-        .cell--moving-down {
-            transition: all var(--cell-move-down-duration) ease-in-out;
-        }
-
-        .cell--destroyed {
-            background-color: #ff0;
-            transition: all var(--cell-destroy-duration) ease-in-out;
-            transform: scale(4);
-            opacity: 0;
-            z-index: -1;
-        }
-
-        .cell--selected {
-            background-color: #f00;
-        }
-
-        .cell--shared {
-            border: solid 3px #f0f;
-        }
-    }
 
 
-    @keyframes oscillate {
-        0% {
-          transform: rotate(0deg);
-        }
-        25% {
-          transform: rotate(15deg); /* Inclinaison à droite */
-        }
-        50% {
-          transform: rotate(0deg); /* Retour au centre */
-        }
-        75% {
-          transform: rotate(-15deg); /* Inclinaison à gauche */
-        }
-        100% {
-          transform: rotate(0deg); /* Retour au centre */
+            @keyframes oscillate {
+                0% {
+                transform: rotate(-15deg);
+                }
+                // 25% {
+                //   transform: rotate(0deg); /* Inclinaison à droite */
+                // }
+                50% {
+                transform: rotate(15deg); /* Retour au centre */
+                }
+                // 75% {
+                //   transform: rotate(0deg); /* Inclinaison à gauche */
+                // }
+                100% {
+                transform: rotate(-15deg); /* Retour au centre */
+                }
+            }
         }
     }
 }

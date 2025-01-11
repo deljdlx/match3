@@ -62,8 +62,6 @@ export const Board: React.FC<BoardProps> = ({
     setCellMoveDownDuration(parseInt(
       rootStyles.getPropertyValue("--cell-move-down-duration").trim(), 10)
     );
-
-
   }, []);
 
 
@@ -345,6 +343,30 @@ export const Board: React.FC<BoardProps> = ({
   };
 
 
+  const handleMatches = () => {
+    const verticalMatches = getVerticalMatches();
+    verticalMatches.forEach((match) => {
+      setTimeout(() => {
+        handleCellDestroy(match);
+      }, cellMoveDuration + 10);
+
+      setTimeout(() => {
+        moveCellsDown(match);
+      }, cellMoveDuration + 100);
+    });
+
+    const horizontalMatches = getHorizontalMatches();
+    horizontalMatches.forEach((match) => {
+      setTimeout(() => {
+        handleCellDestroy(match);
+      }, cellMoveDuration + 10);
+
+      setTimeout(() => {
+          moveCellsDown(match);
+      }, cellMoveDuration + 100);
+    });
+  };
+
 
   const handleClick = (index: number, cellDescriptor: CellDescriptor) => {
     // =======================================
@@ -363,28 +385,30 @@ export const Board: React.FC<BoardProps> = ({
       firstCell.coordinates = secondCell.coordinates;
       secondCell.coordinates = tempCoordinates;
 
+      handleMatches();
 
-      const verticalMatches = getVerticalMatches();
-      verticalMatches.forEach((match) => {
-        setTimeout(() => {
-          handleCellDestroy(match);
-        }, cellMoveDuration + 10);
 
-        setTimeout(() => {
-          moveCellsDown(match);
-        }, cellMoveDuration + 100);
-      });
+      // const verticalMatches = getVerticalMatches();
+      // verticalMatches.forEach((match) => {
+      //   setTimeout(() => {
+      //     handleCellDestroy(match);
+      //   }, cellMoveDuration + 10);
 
-      const horizontalMatches = getHorizontalMatches();
-      horizontalMatches.forEach((match) => {
-        setTimeout(() => {
-          handleCellDestroy(match);
-        }, cellMoveDuration + 10);
+      //   setTimeout(() => {
+      //     moveCellsDown(match);
+      //   }, cellMoveDuration + 100);
+      // });
 
-        setTimeout(() => {
-            moveCellsDown(match);
-        }, cellMoveDuration + 100);
-      });
+      // const horizontalMatches = getHorizontalMatches();
+      // horizontalMatches.forEach((match) => {
+      //   setTimeout(() => {
+      //     handleCellDestroy(match);
+      //   }, cellMoveDuration + 10);
+
+      //   setTimeout(() => {
+      //       moveCellsDown(match);
+      //   }, cellMoveDuration + 100);
+      // });
 
       setTimeout(() => {
         moveDestroyedCells();
@@ -406,7 +430,7 @@ export const Board: React.FC<BoardProps> = ({
 
 
   return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
+    <div className="board">
        <div className="grid">
             {grid.map((descriptor, index) => {
                     return (
