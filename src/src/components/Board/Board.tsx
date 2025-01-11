@@ -23,16 +23,7 @@ export const Board: React.FC<BoardProps> = ({
 }) => {
 
   const { grid, setGrid, styles } = useInitializeBoard(gridWidth, gridHeight, possibleValues);
-
   const [globalDelay, setGlobalDelay] = useState<number>(300);
-
-
-  // const [grid, setGrid] = useState<CellDescriptor[]>([]);
-  // const [cellSize, setCellSize] = useState<number>(50);
-  // const [cellMoveDuration, setCellMoveDuration] = useState<number>(300);
-  // const [cellDestroyDuration, setCellDestroyDuration] = useState<number>(500);
-  // const [cellMoveDownDuration, setCellMoveDownDuration] = useState<number>(300);
-
   const [firstCellIndex, setFirstCellIndex] = useState<number | undefined>();
 
   const [matches, setMatches] = useState<CellDescriptor[][]>([]);
