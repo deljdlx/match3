@@ -122,10 +122,7 @@ export const Board: React.FC<BoardProps> = ({
   }, [isLoopFinished]);
 
 
-
-
   async function handleMatches() {
-
     setIsLocked(true);
 
     const matches = getMatches(grid, gridWidth, gridHeight, matchSize);
@@ -147,12 +144,14 @@ export const Board: React.FC<BoardProps> = ({
     }
   }
 
+
   const handleScores = (matches: CellDescriptor[][]) => {
     matches.forEach((match, index) => {
       incrementScore(10 * match.length * (index + 1) * (comboLength + 1));
       incrementScoreByValue(match[0].value, match.length);
     });
   };
+
 
   const canSwap = (index1: number, index2: number) => {
     if(areCellsAdjacent(grid, index1, index2) || 1) {
@@ -162,9 +161,6 @@ export const Board: React.FC<BoardProps> = ({
 
 
   const handleClick = (index: number, cellDescriptor: CellDescriptor) => {
-    // =======================================
-
-
     if(isLocked) {
       return;
     }
@@ -244,9 +240,6 @@ export const Board: React.FC<BoardProps> = ({
             <StatsBar />
           </div>
       </div>
-      {/* <footer>
-        <StatsBar />
-      </footer> */}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { CellDescriptor } from "../../../types/CellDescriptor";
+import { destroyCell } from "../utils/gridUtils";
 
 type UseDestroyCellsProps = {
   grid: CellDescriptor[];
@@ -24,9 +25,7 @@ export const useDestroyCells = ({
   setMoveDownPending,
 }: UseDestroyCellsProps) => {
   const handleDestroy = useCallback(() => {
-
     console.log('%cHANDLE DESTROY:' + destructionPending, 'color: #f0f; font-size: 2rem');
-
 
     if (!destructionPending) {
       return;
@@ -37,10 +36,7 @@ export const useDestroyCells = ({
       const newGrid = [...prevGrid];
       matches.forEach((match) => {
         match.forEach((cellDescriptor) => {
-          newGrid[cellDescriptor.index] = {
-            ...newGrid[cellDescriptor.index],
-            isDestroyed: true,
-          };
+          destroyCell(newGrid, cellDescriptor);
         });
       });
       return newGrid;

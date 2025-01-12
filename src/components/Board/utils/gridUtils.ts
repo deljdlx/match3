@@ -58,6 +58,11 @@ export const getCellsAbove = (grid: CellDescriptor[], cell: CellDescriptor, ) =>
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export const destroyCell = (grid: CellDescriptor[], cell: CellDescriptor) => {
+  const clonedCell = { ...cell, isDestroyed: true };
+  grid[cell.index] = clonedCell;
+  return clonedCell;
+};
 
 export const getMatches = (
     grid: CellDescriptor[],
