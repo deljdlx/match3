@@ -197,7 +197,7 @@ export const Board: React.FC<BoardProps> = ({
 
 
   const handleSwipe = async (cellDescriptor: CellDescriptor, direction: number) => {
-    console.log('swipe', cellDescriptor, direction)
+    handlePlayClick();
 
     // up
     if( direction === 0 ) {
