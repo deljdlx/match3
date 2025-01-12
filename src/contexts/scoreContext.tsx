@@ -2,14 +2,16 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type ScoreContextType = {
   incrementScore: (value: number) => void;
-    resetScore: () => void;
-    score: number;
-    cellsDestroyed: number;
-    combos: number;
-    maxCombosLength: number;
-    incrementCellsDestroyed: (value: number) => void;
-    incrementCombos: (value: number) => void;
-    setMaxCombosLength: (value: number) => void;
+  resetScore: () => void;
+  score: number;
+  cellsDestroyed: number;
+  combos: number;
+  maxCombosLength: number;
+  incrementCellsDestroyed: (value: number) => void;
+  incrementCombos: (value: number) => void;
+  setMaxCombosLength: (value: number) => void;
+  scoreByValues: { [key: number]: number };
+  incrementScoreByValue: (value: number, increment: number) => void;
 };
 
 // Crée un contexte avec un type par défaut (null)
@@ -22,6 +24,16 @@ export const ScoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [cellsDestroyed, setCellsDestroyed] = useState(0);
     const [combos, setCombos] = useState(0);
     const [maxCombosLength, setMaxCombosLengthState] = useState(0);
+    const [scoreByValues, setScoreByValues] = useState<{ [key: number]: number }>({});
+
+    const incrementScoreByValue = (value: number, increment: number) => {
+        setScoreByValues((prev) => {
+            const newScoreByValues = { ...prev };
+            newScoreByValues[value] = (newScoreByValues[value] || 0) + increment;
+            return newScoreByValues;
+        });
+    };
+
 
     const incrementScore = (value: number) => {
         setScore((prev) => prev + value);
@@ -45,8 +57,6 @@ export const ScoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
     }
 
-
-
   return (
     <ScoreContext.Provider value={{
         score,
@@ -57,7 +67,9 @@ export const ScoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         combos,
         incrementCombos,
         maxCombosLength,
-        setMaxCombosLength
+        setMaxCombosLength,
+        scoreByValues,
+        incrementScoreByValue,
     }}>
         {children}
     </ScoreContext.Provider>

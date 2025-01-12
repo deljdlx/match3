@@ -9,7 +9,12 @@ export const StatsBar: React.FC<StatsBarProps> = ({
 
 }) => {
 
-    const { cellsDestroyed, combos, maxCombosLength } = useScoreContext();
+    const {
+        cellsDestroyed,
+        combos,
+        maxCombosLength,
+        scoreByValues
+    } = useScoreContext();
 
 
     return (
@@ -17,6 +22,15 @@ export const StatsBar: React.FC<StatsBarProps> = ({
             <div className="item">💥 {cellsDestroyed} </div>
             <div className="item">🎉 {combos} </div>
             <div className="item">➿ {maxCombosLength} </div>
+            {
+                Object.entries(scoreByValues).map(([value, count]) => (
+                    <div key={value} className="item">
+                        <span className={'score--' + value}></span> : {count}
+                    </div>
+                ))
+            }
+
+
         </div>
     );
 };

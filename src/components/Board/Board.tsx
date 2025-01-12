@@ -58,12 +58,10 @@ export const Board: React.FC<BoardProps> = ({
     score,
     incrementScore,
     resetScore,
-    cellsDestroyed,
     incrementCellsDestroyed,
-    combos,
     incrementCombos,
-    maxCombosLength,
     setMaxCombosLength,
+    incrementScoreByValue
   } = useScoreContext();
 
 
@@ -148,6 +146,7 @@ export const Board: React.FC<BoardProps> = ({
   const handleScores = (matches: CellDescriptor[][]) => {
     matches.forEach((match, index) => {
       incrementScore(10 * match.length * (index + 1) * (comboLength + 1));
+      incrementScoreByValue(match[0].value, match.length);
     });
   };
 
@@ -179,9 +178,9 @@ export const Board: React.FC<BoardProps> = ({
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const handlePlayClick = () => {
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.play();
-    }
+    // if (audioPlayerRef.current) {
+    //   audioPlayerRef.current.play();
+    // }
   };
 
   const wowAudioRef = useRef<HTMLAudioElement>(null);
@@ -207,24 +206,31 @@ export const Board: React.FC<BoardProps> = ({
         <AudioPlayer ref={audioPlayerRef} src={track01} loop/>
       </div>
 
-      {(grid.length > 0 || matches.length > 0) && (
-        <div className="grid">
-              {grid.map((descriptor, index) => {
-                      return (
-                          <Cell
-                              key={index}
-                              descriptor={descriptor}
-                              cellSize={styles.cellSize}
-                              onClick={(cellDescriptor) => handleClick(index, cellDescriptor)}
-                          />
-                      );
-                  })
-              }
+      <div className="panels">
+          <div className="panel panel--grid">
+            {(grid.length > 0 || matches.length > 0) && (
+              <div className="grid">
+                    {grid.map((descriptor, index) => {
+                            return (
+                                <Cell
+                                    key={index}
+                                    descriptor={descriptor}
+                                    cellSize={styles.cellSize}
+                                    onClick={(cellDescriptor) => handleClick(index, cellDescriptor)}
+                                />
+                            );
+                        })
+                    }
+                </div>
+            )}
           </div>
-      )}
-      <footer>
+          <div className="panel panel--stats">
+            <StatsBar />
+          </div>
+      </div>
+      {/* <footer>
         <StatsBar />
-      </footer>
+      </footer> */}
     </div>
   );
 }
