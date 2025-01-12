@@ -7,7 +7,7 @@
 
 
 :root {
-    --board-grid-columns: 6;
+    --board-grid-columns: 5;
     --board-grid-rows: 8;
 
     --cell-size: 70px;
@@ -23,6 +23,7 @@
     --cell-padding: 4px;
 }
 
+html, body {margin: 0; height: 100%; overflow: hidden}
 
 body {
     background-color: #99d;

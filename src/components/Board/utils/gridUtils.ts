@@ -56,6 +56,8 @@ export const getCellsAbove = (grid: CellDescriptor[], cell: CellDescriptor, ) =>
 };
 
 
+
+
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const destroyCell = (grid: CellDescriptor[], cell: CellDescriptor) => {
@@ -77,20 +79,56 @@ export const getMatches = (
     return matches;
 }
 
+export const getAboveCell = (grid: CellDescriptor[], cell: CellDescriptor) => {
+  const aboveCell = getCellByCoordinates(grid, {
+    x: cell.coordinates.x,
+    y: cell.coordinates.y - 1 }
+  );
 
-  export const getCellByCoordinates = (grid: CellDescriptor[], coordinates: {x: number, y: number}) => {
+  return aboveCell;
+}
 
-    return grid.find((cell) => {
-      return cell.coordinates.x === coordinates.x
-        && cell.coordinates.y === coordinates.y
-    });
-  };
+export const getRightCell = (grid: CellDescriptor[], cell: CellDescriptor) => {
+  const rightCell = getCellByCoordinates(grid, {
+    x: cell.coordinates.x + 1,
+    y: cell.coordinates.y }
+  );
 
-  export const areCellsAdjacent = (grid: CellDescriptor[], index1: number, index2: number) => {
-    const { x: x1, y: y1 } = grid[index1].coordinates;
-    const { x: x2, y: y2 } = grid[index2].coordinates;
-    return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
-  };
+  return rightCell;
+}
+
+export const getLeftCell = (grid: CellDescriptor[], cell: CellDescriptor) => {
+  const leftCell = getCellByCoordinates(grid, {
+    x: cell.coordinates.x - 1,
+    y: cell.coordinates.y }
+  );
+
+  return leftCell;
+}
+
+export const getBottomCell = (grid: CellDescriptor[], cell: CellDescriptor) => {
+  const bottomCell = getCellByCoordinates(grid, {
+    x: cell.coordinates.x,
+    y: cell.coordinates.y + 1 }
+  );
+
+  return bottomCell;
+}
+
+
+export const getCellByCoordinates = (grid: CellDescriptor[], coordinates: {x: number, y: number}) => {
+
+  return grid.find((cell) => {
+    return cell.coordinates.x === coordinates.x
+      && cell.coordinates.y === coordinates.y
+  });
+};
+
+export const areCellsAdjacent = (grid: CellDescriptor[], index1: number, index2: number) => {
+  const { x: x1, y: y1 } = grid[index1].coordinates;
+  const { x: x2, y: y2 } = grid[index2].coordinates;
+  return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
+};
 
 
 

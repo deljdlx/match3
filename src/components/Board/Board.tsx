@@ -2,7 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { useScoreContext } from "../../contexts/scoreContext";
 
-import { getMatches, areCellsAdjacent, sleep } from "./utils/gridUtils";
+import {
+  getMatches,
+  areCellsAdjacent,
+  sleep,
+  getAboveCell,
+  getRightCell,
+  getBottomCell,
+  getLeftCell,
+  getCellByCoordinates
+} from "./utils/gridUtils";
 
 import { useInitializeBoard } from "./hooks/useInitializeBoard";
 import { useDestroyCells } from "./hooks/useDestroyCells";
@@ -182,10 +191,83 @@ export const Board: React.FC<BoardProps> = ({
       handleMatches();
     }
 
-
     grid[firstCellIndex].isSelected = false;
     setFirstCellIndex(undefined);
   }
+
+
+  const handleSwipe = async (cellDescriptor: CellDescriptor, direction: number) => {
+    console.log('swipe', cellDescriptor, direction)
+
+    // up
+    if( direction === 0 ) {
+      const aboveCell = getAboveCell(grid, cellDescriptor);
+
+      if(aboveCell !== undefined) {
+        if(canSwap(cellDescriptor.index, aboveCell.index)) {
+          setFirstCellIndex(cellDescriptor.index);
+          const firstCell = grid[cellDescriptor.index];
+          const secondCell = grid[aboveCell.index];
+          const tempCoordinates = firstCell.coordinates;
+          firstCell.coordinates = secondCell.coordinates;
+          secondCell.coordinates = tempCoordinates;
+          handleMatches();
+        }
+      }
+      return;
+    }
+
+    if( direction === 1 ) {
+      const rightCell = getRightCell(grid, cellDescriptor);
+      if(rightCell !== undefined) {
+        if(canSwap(cellDescriptor.index, rightCell.index)) {
+          setFirstCellIndex(cellDescriptor.index);
+          const firstCell = grid[cellDescriptor.index];
+          const secondCell = grid[rightCell.index];
+          const tempCoordinates = firstCell.coordinates;
+          firstCell.coordinates = secondCell.coordinates;
+          secondCell.coordinates = tempCoordinates;
+          handleMatches();
+        }
+      }
+      return;
+    }
+
+    if( direction === 2 ) {
+      const bottomCell = getBottomCell(grid, cellDescriptor);
+      if(bottomCell !== undefined) {
+        if(canSwap(cellDescriptor.index, bottomCell.index)) {
+          setFirstCellIndex(cellDescriptor.index);
+          const firstCell = grid[cellDescriptor.index];
+          const secondCell = grid[bottomCell.index];
+          const tempCoordinates = firstCell.coordinates;
+          firstCell.coordinates = secondCell.coordinates;
+          secondCell.coordinates = tempCoordinates;
+          handleMatches();
+        }
+      }
+      return;
+    }
+
+    if( direction === 3 ) {
+      const leftCell = getLeftCell(grid, cellDescriptor);
+      if(leftCell !== undefined) {
+        if(canSwap(cellDescriptor.index, leftCell.index)) {
+          setFirstCellIndex(cellDescriptor.index);
+          const firstCell = grid[cellDescriptor.index];
+          const secondCell = grid[leftCell.index];
+          const tempCoordinates = firstCell.coordinates;
+          firstCell.coordinates = secondCell.coordinates;
+          secondCell.coordinates = tempCoordinates;
+          handleMatches();
+        }
+      }
+      return;
+    }
+
+  };
+
+
 
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
@@ -229,6 +311,7 @@ export const Board: React.FC<BoardProps> = ({
                                     descriptor={descriptor}
                                     cellSize={styles.cellSize}
                                     onClick={(cellDescriptor) => handleClick(index, cellDescriptor)}
+                                    onSwipe={(cellDescriptor, direction) => handleSwipe(cellDescriptor, direction)}
                                 />
                             );
                         })
