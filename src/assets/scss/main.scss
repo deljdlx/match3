@@ -32,12 +32,12 @@ body {
     .application {
         display: flex;
         flex-direction: column;
-        // justify-content: center;
-        // align-items: center;
+        justify-content: center;
+        align-items: center;
         // position: relative;
         height: 100vh;
-        height: calc(var(--cell-size) * var(--board-grid-rows));
-        width: calc(var(--cell-size) * var(--board-grid-columns));
+        // height: calc(var(--cell-size) * var(--board-grid-rows));
+        // width: calc(var(--cell-size) * var(--board-grid-columns));
         margin: auto;
 
 

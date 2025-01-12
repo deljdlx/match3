@@ -10,6 +10,8 @@ import { Cell } from "../Cell/Cell";
 import { ScoreCounter } from "../ScoreCounter/ScoreCounter";
 
 
+import { AudioPlayer, AudioPlayerHandle } from "../AudioPlayer/AudioPlayer";
+
 import track01 from "../../../assets/sounds/tracks/01.mp3";
 
 type BoardProps = {
@@ -416,31 +418,24 @@ export const Board: React.FC<BoardProps> = ({
   }
 
 
-
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  const handlePlay = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch((error) => {
-        console.error("Autoplay bloqué : ", error);
-      });
+  const audioPlayerRef = useRef<AudioPlayerHandle>(null);
+  const handlePlayClick = () => {
+    console.log(audioPlayerRef.current);
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.play();
     }
   };
 
 
-
   return (
-    <div className="board" onClick={handlePlay}>
+    <div className="board" onClick={handlePlayClick}>
       <header>
         <div>
           <ScoreCounter score={score} />
         </div>
 
         <div className="audio-player">
-          <audio ref={audioRef} controls loop/*autoPlay={true}*/>
-            <source src={track01} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
+          <AudioPlayer ref={audioPlayerRef} src={track01} loop/>
         </div>
 
 

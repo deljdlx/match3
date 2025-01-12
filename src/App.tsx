@@ -7,6 +7,8 @@ import { Board } from "./src/components/Board/Board";
 import "./assets/scss/main.scss"; // Chemin vers ton fichier SCSS
 
 
+
+
 function App() {
 
   const [gridWidth, setGridWidth] = useState<number>(0);
