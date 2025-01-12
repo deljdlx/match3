@@ -44,6 +44,9 @@ export const Board: React.FC<BoardProps> = ({
 
   const [matches, setMatches] = useState<CellDescriptor[][]>([]);
 
+
+  const [isLocked, setIsLocked] = useState<boolean>(false);
+
   const [destructionPending, setDestructionPending] = useState<boolean>(false);
   const [moveDownPending, setMoveDownPending] = useState<boolean>(false);
   const [fillEmptyPending, setFillEmptyPending] = useState<boolean>(false);
@@ -126,6 +129,9 @@ export const Board: React.FC<BoardProps> = ({
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   async function handleMatches() {
+
+    setIsLocked(true);
+
     const matches = getMatches(grid, gridWidth, gridHeight, matchSize);
     if(matches.length) {
       setComboLength(comboLength + 1);
@@ -140,6 +146,8 @@ export const Board: React.FC<BoardProps> = ({
         playWow();
       }
       setComboLength(0);
+
+      setIsLocked(false);
     }
   }
 
@@ -153,6 +161,12 @@ export const Board: React.FC<BoardProps> = ({
 
   const handleClick = (index: number, cellDescriptor: CellDescriptor) => {
     // =======================================
+
+
+    if(isLocked) {
+      return;
+    }
+
     if (firstCellIndex === undefined) {
         grid[index].isSelected = true;
         setFirstCellIndex(index);
