@@ -1,14 +1,43 @@
 import React, { useState, useEffect, useRef  } from "react";
 
-import { ScoreProvider } from "./src/contexts/scoreContext";
+import { ScoreProvider } from "./contexts/scoreContext";
 
-import { Board } from "./src/components/Board/Board";
+import { Board } from "./components/Board/Board";
 
 import "./assets/scss/main.scss"; // Chemin vers ton fichier SCSS
 
 
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import { HomePage } from "./pages/HomePage";
+import { PlayPage } from "./pages/PlayPage";
+
+const App: React.FC = () => {
+  return (
+    <ScoreProvider>
+      <div className="application">
+        <Router>
+          <Routes>
+            {/* Route pour l'écran d'accueil */}
+            <Route path="/" element={<HomePage />} />
+
+            {/* Route pour l'écran de jeu */}
+            <Route path="/play" element={<PlayPage />} />
+          </Routes>
+        </Router>
+      </div>
+    </ScoreProvider>
+  );
+};
+
+export default App;
+
+
+
+
+
+/*
 function App() {
 
   const [gridWidth, setGridWidth] = useState<number>(0);
@@ -48,3 +77,5 @@ function App() {
 }
 
 export default App;
+
+*/

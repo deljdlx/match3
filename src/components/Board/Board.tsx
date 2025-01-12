@@ -18,8 +18,8 @@ import { StatsBar } from "../StatsBar/StatsBar";
 
 import { AudioPlayer, AudioPlayerHandle } from "../AudioPlayer/AudioPlayer";
 
-import track01 from "../../../assets/sounds/tracks/01.mp3";
-import wowSound from "../../../assets/sounds/effects/wow.mp3";
+import track01 from "../../assets/sounds/tracks/01.mp3";
+import wowSound from "../../assets/sounds/effects/wow.mp3";
 
 type BoardProps = {
     gridWidth: number;

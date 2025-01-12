@@ -2,7 +2,7 @@ import React from "react";
 import { CellDescriptor } from "../../types/CellDescriptor";
 
 
-import clickSound from "../../../assets/sounds/effects/magic-fairy.mp3";
+import clickSound from "../../assets/sounds/effects/magic-fairy.mp3";
 
 
 type CellProps = {
