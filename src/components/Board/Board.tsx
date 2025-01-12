@@ -272,9 +272,9 @@ export const Board: React.FC<BoardProps> = ({
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const handlePlayClick = () => {
-    // if (audioPlayerRef.current) {
-    //   audioPlayerRef.current.play();
-    // }
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.play();
+    }
   };
 
   const wowAudioRef = useRef<HTMLAudioElement>(null);
