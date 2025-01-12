@@ -3,10 +3,13 @@
     --board-grid-columns: 6;
     --board-grid-rows: 8;
 
-    --cell-size: 80px;
+    --cell-size: 70px;
+
     --cell-destroy-duration: 500ms;
     --cell-move-duration: 300ms;
     --cell-move-down-duration: 500ms;
+
+    --cell-sprite-size: calc(var(--cell-size) * 0.6);
 
     --global-delay: 300ms;
 
@@ -49,14 +52,15 @@ body {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                .audio-player {
-                    text-align: right;
-                    audio {
-                        width: 220px;
-                        height: 30px;
-                    }
+            }
+
+            .audio-player {
+                audio {
+                    width: 220px;
+                    height: 30px;
                 }
             }
+
 
             .stats-bar {
                 margin: 10px 0;
@@ -121,12 +125,13 @@ body {
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        border: 1px solid #FFACB0;
-                        background-color: #55C0B799;
-                        border-radius: 5px;
+
                         width: calc(100% - var(--cell-padding) * 2);
                         height: calc(100% - var(--cell-padding) * 2);
 
+                        border: 1px solid #FFACB0;
+                        background-color: #55C0B799;
+                        border-radius: 5px;
                         box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
 
                         &:hover {
@@ -138,25 +143,25 @@ body {
                         transition: all var(--global-delay) ease-in-out;
 
                         .cell__sprite {
+                            transform-origin: 50% 100%;
                             animation: oscillate 2s infinite;
                             font-size: 1rem;
+                            // add text shadow
+                            text-shadow: 2px 2px 2px #0009;
+                        }
 
+                        $emojies: ('🐵','🦁','🐯','🐶','🐱','🐰','🐻','🐨','🐼','🐷');
+
+                        @for $i from 1 through length($emojies) {
+                            .cell__sprite--#{$i - 1}::before {
+                                content: nth($emojies, $i);
+                                font-size: var(--cell-sprite-size);
+                                margin-top: -20px;
+                            }
                         }
 
                     }
 
-                    // transition: all var(--cell-move-duration) ease-in-out;
-
-
-
-                    $emojies: ('🐵','🦁','🐯','🐶','🐱','🐰','🐻','🐨','🐼','🐷');
-
-                    @for $i from 1 through length($emojies) {
-                        .cell__sprite--#{$i - 1}::before {
-                        content: nth($emojies, $i);
-                        font-size: 3rem;
-                        }
-                    }
                 }
 
                 .cell--moving-down {

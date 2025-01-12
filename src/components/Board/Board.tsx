@@ -179,9 +179,9 @@ export const Board: React.FC<BoardProps> = ({
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const handlePlayClick = () => {
-    // if (audioPlayerRef.current) {
-    //   audioPlayerRef.current.play();
-    // }
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.play();
+    }
   };
 
   const wowAudioRef = useRef<HTMLAudioElement>(null);
@@ -201,11 +201,11 @@ export const Board: React.FC<BoardProps> = ({
         <div>
           <ScoreCounter score={score} />
         </div>
-
-        <div className="audio-player">
-          <AudioPlayer ref={audioPlayerRef} src={track01} loop/>
-        </div>
       </header>
+
+      <div className="audio-player">
+        <AudioPlayer ref={audioPlayerRef} src={track01} loop/>
+      </div>
 
       {(grid.length > 0 || matches.length > 0) && (
         <div className="grid">
