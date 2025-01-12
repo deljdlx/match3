@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { generateRandomValue } from "../utils/gridUtils";
 import { CellDescriptor } from "../../../types/CellDescriptor";
 
 export function useInitializeBoard(gridWidth: number, gridHeight: number, possibleValues: number) {
@@ -15,11 +16,23 @@ export function useInitializeBoard(gridWidth: number, gridHeight: number, possib
     // Initialize grid and styles
     const cells: CellDescriptor[] = [];
     let index = 0;
+
     for (let i = 0; i < gridHeight; i++) {
       for (let j = 0; j < gridWidth; j++) {
+
+        let notIn: number[] = [];
+
+        // avoid same adjacent values
+        if(cells.length >= gridWidth) {
+          notIn.push(cells[cells.length - gridWidth].value);
+        }
+        if(cells.length > 1) {
+          notIn.push(cells[cells.length - 1].value);
+        }
+
         cells.push({
           index,
-          value: Math.floor(Math.random() * possibleValues),
+          value: generateRandomValue(possibleValues, notIn),
           isSelected: false,
           isDestroyed: false,
           isMovingDown: false,

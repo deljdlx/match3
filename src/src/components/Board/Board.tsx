@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { useScoreContext } from "../../contexts/scoreContext";
 
-import {useInitializeBoard} from "./hooks/useInitializeBoard";
+import { getMatches } from "./utils/gridUtils";
+
+import { useInitializeBoard } from "./hooks/useInitializeBoard";
+import { useDestroyCells } from "./hooks/useDestroyCells";
+import { useMoveCellsDown } from "./hooks/useMoveCellsDown";
+import { useFillGrid } from "./hooks/useFillGrid";
 
 import { CellDescriptor } from "../../types/CellDescriptor";
 
@@ -30,6 +35,8 @@ export const Board: React.FC<BoardProps> = ({
 }) => {
 
   const { grid, setGrid, styles } = useInitializeBoard(gridWidth, gridHeight, possibleValues);
+
+
   const [globalDelay, setGlobalDelay] = useState<number>(300);
   const [firstCellIndex, setFirstCellIndex] = useState<number | undefined>();
 
@@ -38,6 +45,7 @@ export const Board: React.FC<BoardProps> = ({
   const [destructionPending, setDestructionPending] = useState<boolean>(false);
   const [moveDownPending, setMoveDownPending] = useState<boolean>(false);
   const [fillEmptyPending, setFillEmptyPending] = useState<boolean>(false);
+  const [isLoopFinished, setIsLoopFinished] = useState<boolean>(false);
 
 
   const { score, incrementScore, resetScore } = useScoreContext();
@@ -50,120 +58,60 @@ export const Board: React.FC<BoardProps> = ({
     console.log(fillEmptyPending);
   });
 
+
+  useDestroyCells({
+    grid,
+    setGrid,
+    matches,
+    setMatches,
+    destructionPending,
+    setDestructionPending,
+    setMoveDownPending,
+    globalDelay,
+  });
+
+  useMoveCellsDown({
+    grid,
+    setGrid,
+    moveDownPending,
+    setMoveDownPending,
+    setFillEmptyPending,
+    globalDelay,
+  });
+
+
+  useFillGrid({
+    grid,
+    gridWidth,
+    gridHeight,
+    matchSize,
+    globalDelay,
+    possibleValues,
+    setGrid,
+    moveDownPending,
+    fillEmptyPending,
+    setFillEmptyPending,
+    setIsLoopFinished,
+  });
+
   useEffect(() => {
-    console.log('%cHANDLE DESTROY:' + destructionPending, 'color: #0ff; font-size: 2rem');
-    if(!destructionPending) {
+    console.log('%cHANDLING LOOP END =============================', 'color: #f00; font-size: 2rem');
+
+    if(!isLoopFinished) {
       return;
     }
 
-    setGrid((prevGrid) => {
-      const newGrid = [...prevGrid];
-      matches.forEach((match) => {
-        match.forEach((cellDescriptor) => {
-          newGrid[cellDescriptor.index] = {
-            ...newGrid[cellDescriptor.index],
-            isDestroyed: true,
-          };
-        });
-      });
-      return newGrid;
-    });
-
-    setDestructionPending(false);
+    handleScores(matches);
     setMatches([]);
 
-    setTimeout(() => {
-      setMoveDownPending(true);
-    }, globalDelay);
+    setIsLoopFinished(false);
 
-  }, [destructionPending]);
-
-  useEffect(() => {
-
-    if(!moveDownPending) {
-      return;
-    }
-
-    console.log('%cHANDLE MOVE DOWN', 'color: #0ff; font-size: 2rem');
-    setGrid((prevGrid) => {
-
-      const newGrid = [...prevGrid].map((cell) => ({ ...cell }));
-
-      const sortedDestroyedCells: {[key: number]: CellDescriptor[]} = {};
-
-      newGrid.forEach((cell) => {
-        if(cell.isDestroyed) {
-          const clonedCell = { ...cell };
-          sortedDestroyedCells[clonedCell.coordinates.x] = sortedDestroyedCells[clonedCell.coordinates.x] || [];
-          sortedDestroyedCells[clonedCell.coordinates.x].push(clonedCell);
-          // cell.coordinates.y = -1;
-        }
-      });
-
-      for(let x  in sortedDestroyedCells) {
-        const cells = sortedDestroyedCells[x];
-        cells.sort((a, b) => a.coordinates.y - b.coordinates.y);
-      }
-
-      console.log('%cBoard.tsx :: 148 =============================', 'color: #f00; font-size: 1rem');
-      console.log(sortedDestroyedCells);
-
-      for(let x in sortedDestroyedCells) {
-        const cells = sortedDestroyedCells[x];
-        cells.forEach((cell, i) => {
-          const cellsAbove = getCellsAbove(cell, newGrid);
-          cellsAbove.forEach((cellAbove) => {
-            newGrid[cellAbove.index].coordinates = {
-              x: cellAbove.coordinates.x,
-              y: cellAbove.coordinates.y + 1,
-            };
-          });
-        });
-      }
-
-      return newGrid;
-    });
-
-    setMoveDownPending(false);
-    setTimeout(() => {
-      setFillEmptyPending(true);
-    }, globalDelay);
-  }, [moveDownPending]);
-
-  useEffect(() => {
-
-    console.log('%cHANDLE FILL CELLS', 'color: #0ff; font-size: 2rem');
-    if(moveDownPending || !fillEmptyPending) {
-      return;
-    }
-
-    setGrid((prevGrid) => {
-      const newGrid = [...prevGrid];
-      newGrid.forEach((cell) => {
-        if(cell.isDestroyed) {
-          const firstCell = getFirstCellOfColumn(cell.coordinates.x, newGrid);
-
-          cell.isDestroyed = false;
-          cell.value = generateRandomValue();
-
-          if(firstCell) {
-            cell.coordinates = {
-              x: cell.coordinates.x,
-              y: firstCell.coordinates.y - 1,
-            };
-          }
-        }
-      });
-
-      return newGrid;
-    });
-
-    setFillEmptyPending(false);
     setTimeout(() => {
       handleMatches();
-    }, globalDelay);
+    }, 10);
 
-  }, [fillEmptyPending]);
+
+  }, [isLoopFinished]);
 
 
 
@@ -179,14 +127,6 @@ export const Board: React.FC<BoardProps> = ({
         y: 0,
       },
     };
-  }
-
-  const generateRandomValue = (notIn: number[] = []): number => {
-    let value = Math.floor(Math.random() * possibleValues);
-    while (notIn.includes(value)) {
-      value = Math.floor(Math.random() * possibleValues);
-    }
-    return value;
   }
 
   const areAdjacent = (index1: number, index2: number) => {
@@ -205,180 +145,13 @@ export const Board: React.FC<BoardProps> = ({
     });
   };
 
-  const getFirstCellOfColumn = (column: number, newGrid: CellDescriptor[] | null = null) => {
-    let minY = gridHeight;
-    let firstCell: CellDescriptor | undefined;
-
-    newGrid = newGrid || grid;
-
-    newGrid.forEach((cell) => {
-      if(cell.coordinates.x === column && cell.coordinates.y < minY && !cell.isDestroyed) {
-        minY = cell.coordinates.y;
-        firstCell = cell;
-      }
-    });
-
-    return firstCell;
-  };
-
-  const getCellsAbove = (cell: CellDescriptor, newGrid: CellDescriptor[] | null = null) => {
-    const cells: CellDescriptor[] = [];
-    newGrid = newGrid || grid;
-
-    newGrid.forEach((cellDescriptor) => {
-      if(
-        cellDescriptor.coordinates.x === cell.coordinates.x
-        && cellDescriptor.coordinates.y < cell.coordinates.y
-        && !cellDescriptor.isDestroyed
-      ) {
-        cells.push(cellDescriptor);
-      }
-    });
-
-    // sort by y
-    cells.sort((a, b) =>  b.coordinates.y - a.coordinates.y);
-
-    return cells;
-  }
-
-
-
-  const getHorizontalMatch = (cell: CellDescriptor) => {
-    const matches: CellDescriptor[] = [cell];
-    const { x, y } = cell.coordinates;
-    const value = cell.value;
-
-    // check left
-    for (let i = x - 1; i >= 0; i--) {
-      const leftCell = getCellByCoordinates({ x: i, y });
-      if (leftCell?.value === value) {
-        matches.push(leftCell);
-      } else {
-        break;
-      }
-    }
-
-    // check right
-    for (let i = x + 1; i < gridWidth; i++) {
-      const rightCell = getCellByCoordinates({ x: i, y });
-      if (rightCell?.value === value) {
-        matches.push(rightCell);
-      } else {
-        break;
-      }
-    }
-
-    return matches;
-  };
-
-  const getVerticalMatch = (cell: CellDescriptor) => {
-    const matches: CellDescriptor[] = [cell];
-    const { x, y } = cell.coordinates;
-    const value = cell.value;
-
-    // check top
-    for (let i = y - 1; i >= 0; i--) {
-      const topCell = getCellByCoordinates({ x, y: i });
-      if (topCell?.value === value) {
-        matches.push(topCell);
-      } else {
-        break;
-      }
-    }
-
-    // check bottom
-    for (let i = y + 1; i < gridHeight; i++) {
-      const bottomCell = getCellByCoordinates({ x, y: i });
-      if (bottomCell?.value === value) {
-        matches.push(bottomCell);
-      } else {
-        break;
-      }
-    }
-
-    return matches;
-  }
-
-
-  const getVerticalMatches = () => {
-    const matches: CellDescriptor[][] = [];
-
-    const horizontalChecked: number[] = [];
-    const verticalChecked: number[]= [];
-
-    for (let i = 0; i < grid.length; i++) {
-      const cellDescriptor = grid[i];
-      if(cellDescriptor.isDestroyed) {
-        continue;
-      }
-
-      if (!verticalChecked.includes(cellDescriptor.index)) {
-        const verticalMatches = getVerticalMatch(cellDescriptor);
-        verticalMatches.forEach((cellDescriptor) => {
-          verticalChecked.push(cellDescriptor.index);
-        });
-
-        if(verticalMatches.length >= matchSize) {
-          matches.push(verticalMatches);
-        }
-      }
-    }
-
-    return matches;
-  }
-
-  const getHorizontalMatches = () => {
-    const matches: CellDescriptor[][] = [];
-
-    const horizontalChecked: number[] = [];
-
-    for (let i = 0; i < grid.length; i++) {
-      const cellDescriptor = grid[i];
-      if(cellDescriptor.isDestroyed) {
-        continue;
-      }
-
-      if (!horizontalChecked.includes(cellDescriptor.index)) {
-        const horizontalMatches = getHorizontalMatch(cellDescriptor);
-        horizontalMatches.forEach((cellDescriptor) => {
-          horizontalChecked.push(cellDescriptor.index);
-        });
-
-        if(horizontalMatches.length >= matchSize) {
-          matches.push(horizontalMatches);
-        }
-      }
-    }
-
-    return matches;
-  }
-
-
-  const setGridAsReady = () => {
-    setGrid((prevGrid) => {
-      const newGrid = [...prevGrid];
-      newGrid.forEach((cell) => {
-        cell.isMovingDown = false;
-      });
-      return newGrid;
-    });
-  };
-
-
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 
   async function handleMatches() {
-
-    const verticalMatches = getVerticalMatches();
-    const horizontalMatches = getHorizontalMatches();
-    const matches = [...horizontalMatches, ...verticalMatches];
+    const matches = getMatches(grid, gridWidth, gridHeight, matchSize);
     if(matches.length) {
-
-      handleScores(matches);
-
-      console.log(matches);
       setMatches(matches);
       await delay(globalDelay);
       setDestructionPending(true);
@@ -420,10 +193,10 @@ export const Board: React.FC<BoardProps> = ({
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const handlePlayClick = () => {
-    console.log(audioPlayerRef.current);
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.play();
-    }
+    // console.log(audioPlayerRef.current);
+    // if (audioPlayerRef.current) {
+    //   audioPlayerRef.current.play();
+    // }
   };
 
 
