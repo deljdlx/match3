@@ -71,12 +71,18 @@ export const getMatches = (
 }
 
 
-  const getCellByCoordinates = (grid: CellDescriptor[], coordinates: {x: number, y: number}) => {
+  export const getCellByCoordinates = (grid: CellDescriptor[], coordinates: {x: number, y: number}) => {
 
     return grid.find((cell) => {
       return cell.coordinates.x === coordinates.x
         && cell.coordinates.y === coordinates.y
     });
+  };
+
+  export const areCellsAdjacent = (grid: CellDescriptor[], index1: number, index2: number) => {
+    const { x: x1, y: y1 } = grid[index1].coordinates;
+    const { x: x2, y: y2 } = grid[index2].coordinates;
+    return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
   };
 
 

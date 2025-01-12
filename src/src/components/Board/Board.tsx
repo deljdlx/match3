@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { useScoreContext } from "../../contexts/scoreContext";
 
-import { getMatches } from "./utils/gridUtils";
+import { getMatches, areCellsAdjacent } from "./utils/gridUtils";
 
 import { useInitializeBoard } from "./hooks/useInitializeBoard";
 import { useDestroyCells } from "./hooks/useDestroyCells";
@@ -94,6 +94,7 @@ export const Board: React.FC<BoardProps> = ({
     setIsLoopFinished,
   });
 
+
   useEffect(() => {
     console.log('%cHANDLING LOOP END =============================', 'color: #f00; font-size: 2rem');
 
@@ -114,40 +115,7 @@ export const Board: React.FC<BoardProps> = ({
   }, [isLoopFinished]);
 
 
-
-  const createCellDescriptor = (index: number): CellDescriptor => {
-    return {
-      index,
-      value: 0,
-      isSelected: false,
-      isDestroyed: false,
-      isMovingDown: false,
-      coordinates: {
-        x: 0,
-        y: 0,
-      },
-    };
-  }
-
-  const areAdjacent = (index1: number, index2: number) => {
-    const coordinates1 = grid[index1].coordinates;
-    const coordinates2 = grid[index2].coordinates;
-
-    return Math.abs(coordinates1.x - coordinates2.x) <=1
-      && Math.abs(coordinates1.y - coordinates2.y) <= 1;
-  }
-
-  const getCellByCoordinates = (coordinates: {x: number, y: number}, newGrid: CellDescriptor[] | null = null) => {
-    newGrid = newGrid || grid;
-    return newGrid.find((cell) => {
-      return cell.coordinates.x === coordinates.x
-        && cell.coordinates.y === coordinates.y
-    });
-  };
-
-
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
   async function handleMatches() {
     const matches = getMatches(grid, gridWidth, gridHeight, matchSize);
@@ -173,7 +141,7 @@ export const Board: React.FC<BoardProps> = ({
         return;
     }
 
-    if(areAdjacent(firstCellIndex, index) || 1) {
+    if(areCellsAdjacent(grid, firstCellIndex, index) || 1) {
       const firstCell = grid[firstCellIndex];
       const secondCell = grid[index];
 
@@ -193,15 +161,16 @@ export const Board: React.FC<BoardProps> = ({
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const handlePlayClick = () => {
-    // console.log(audioPlayerRef.current);
-    // if (audioPlayerRef.current) {
-    //   audioPlayerRef.current.play();
-    // }
+    console.log(audioPlayerRef.current);
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.play();
+    }
   };
 
 
   return (
     <div className="board" onClick={handlePlayClick}>
+
       <header>
         <div>
           <ScoreCounter score={score} />
@@ -210,8 +179,6 @@ export const Board: React.FC<BoardProps> = ({
         <div className="audio-player">
           <AudioPlayer ref={audioPlayerRef} src={track01} loop/>
         </div>
-
-
       </header>
 
       {(grid.length > 0 || matches.length > 0) && (
