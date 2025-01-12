@@ -197,6 +197,11 @@ export const Board: React.FC<BoardProps> = ({
 
 
   const handleSwipe = async (cellDescriptor: CellDescriptor, direction: number) => {
+
+    if(isLocked) {
+      return;
+    }
+
     // up
     if( direction === 0 ) {
       const aboveCell = getAboveCell(grid, cellDescriptor);
