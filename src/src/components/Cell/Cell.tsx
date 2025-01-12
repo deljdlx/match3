@@ -39,7 +39,7 @@ export const Cell: React.FC<CellProps> = ({
       </audio>
 
 
-      <button
+      <div
         onClick={handleClick}
         style={{
           left: `${descriptor.coordinates.x * cellSize}px`,
@@ -52,10 +52,12 @@ export const Cell: React.FC<CellProps> = ({
           descriptor.isMovingDown ? 'cell--moving-down' : '',
         ].join(' ')}
       >
-        <span className={'cell__sprite cell__sprite--'+descriptor.value}>
-          {/* {descriptor.coordinates.x} - {descriptor.coordinates.y} */}
-        </span>
-      </button>
+        <div className="cell__wrapper">
+          <span className={'cell__sprite cell__sprite--'+descriptor.value}>
+            {/* {descriptor.coordinates.x} - {descriptor.coordinates.y} */}
+          </span>
+        </div>
+      </div>
     </>
   );
 };

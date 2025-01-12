@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+import { useScoreContext } from "../../contexts/scoreContext";
 
 import {useInitializeBoard} from "./hooks/useInitializeBoard";
 
 import { CellDescriptor } from "../../types/CellDescriptor";
 
 import { Cell } from "../Cell/Cell";
+import { ScoreCounter } from "../ScoreCounter/ScoreCounter";
 
+
+import track01 from "../../../assets/sounds/tracks/01.mp3";
 
 type BoardProps = {
     gridWidth: number;
@@ -33,6 +38,9 @@ export const Board: React.FC<BoardProps> = ({
   const [fillEmptyPending, setFillEmptyPending] = useState<boolean>(false);
 
 
+  const { score, incrementScore, resetScore } = useScoreContext();
+
+
   useEffect(() => {
     console.log('%cRENDER =============================', 'color: #f0f; font-size: 2rem');
     console.log(destructionPending);
@@ -41,7 +49,6 @@ export const Board: React.FC<BoardProps> = ({
   });
 
   useEffect(() => {
-
     console.log('%cHANDLE DESTROY:' + destructionPending, 'color: #0ff; font-size: 2rem');
     if(!destructionPending) {
       return;
@@ -357,27 +364,30 @@ export const Board: React.FC<BoardProps> = ({
 
 
 
-
-
-
-
-
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  async function handleMatches() {
 
-    console.log('%cHANDLE MATCHES', 'color: #0ff; font-size: 2rem');
+  async function handleMatches() {
 
     const verticalMatches = getVerticalMatches();
     const horizontalMatches = getHorizontalMatches();
     const matches = [...horizontalMatches, ...verticalMatches];
     if(matches.length) {
+
+      handleScores(matches);
+
       console.log(matches);
       setMatches(matches);
       await delay(globalDelay);
       setDestructionPending(true);
     }
   }
+
+  const handleScores = (matches: CellDescriptor[][]) => {
+    matches.forEach((match, index) => {
+      incrementScore(10 * match.length * (index + 1));
+    });
+  };
 
 
   const handleClick = (index: number, cellDescriptor: CellDescriptor) => {
@@ -406,22 +416,50 @@ export const Board: React.FC<BoardProps> = ({
   }
 
 
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play().catch((error) => {
+        console.error("Autoplay bloqué : ", error);
+      });
+    }
+  };
+
+
+
   return (
-    <div className="board">
-      {(grid.length > 0 || matches.length > 0) && (
-       <div className="grid">
-            {grid.map((descriptor, index) => {
-                    return (
-                        <Cell
-                            key={index}
-                            descriptor={descriptor}
-                            cellSize={styles.cellSize}
-                            onClick={(cellDescriptor) => handleClick(index, cellDescriptor)}
-                        />
-                    );
-                })
-            }
+    <div className="board" onClick={handlePlay}>
+      <header>
+        <div>
+          <ScoreCounter score={score} />
         </div>
+
+        <div className="audio-player">
+          <audio ref={audioRef} controls loop/*autoPlay={true}*/>
+            <source src={track01} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+
+
+      </header>
+
+      {(grid.length > 0 || matches.length > 0) && (
+        <div className="grid">
+              {grid.map((descriptor, index) => {
+                      return (
+                          <Cell
+                              key={index}
+                              descriptor={descriptor}
+                              cellSize={styles.cellSize}
+                              onClick={(cellDescriptor) => handleClick(index, cellDescriptor)}
+                          />
+                      );
+                  })
+              }
+          </div>
       )}
     </div>
   );

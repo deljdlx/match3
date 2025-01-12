@@ -9,6 +9,8 @@
     --cell-move-down-duration: 500ms;
 
     --global-delay: 300ms;
+
+    --cell-padding: 4px;
 }
 
 
@@ -16,34 +18,62 @@ body {
     background-color: #99d;
     background-image: url(../images/background-00.webp);
     background-size: cover;
+    background-repeat: no-repeat;
     background-position: center;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+
+
+    h1 {
+        margin: 0;
+    }
+
     .application {
         display: flex;
         flex-direction: column;
         // justify-content: center;
         // align-items: center;
-        position: relative;
+        // position: relative;
         height: 100vh;
         height: calc(var(--cell-size) * var(--board-grid-rows));
         width: calc(var(--cell-size) * var(--board-grid-columns));
         margin: auto;
 
-        .audio-player {
-            text-align: center;
-        }
 
         .board {
             margin: auto;
-            margin-top: 50px;
-            border: solid 3px #f0f;
+            // margin-top: 50px;
+            // border: solid 3px #f0f;
             position: relative;
             height: calc(var(--cell-size) * var(--board-grid-rows));
             width: calc(var(--cell-size) * var(--board-grid-columns));
+
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                .audio-player {
+                    text-align: right;
+                    audio {
+                        width: 220px;
+                        height: 30px;
+                    }
+                }
+            }
+
+
+            .score-counter {
+                color: #FDA7B4;
+                // add border to letters
+                text-shadow: 2px 2px 0 #7F8BBD, -2px -2px 0 #7F8BBD, 2px -2px 0 #7F8BBD, -2px 2px 0 #7F8BBD;
+            }
 
             .grid {
                 position: relative;
 
                 .cell {
+
                     cursor: pointer;
                     position: absolute;
                     display: flex;
@@ -51,19 +81,52 @@ body {
                     width: var(--cell-size);
                     justify-content: center;
                     align-items: center;
-                    border: 1px solid #000;
-                    background-color: #9aa;
-                    border-radius: 5px;
+                    transition: all var(--global-delay) ease-in-out;
+
+                    // border: 1px solid #000;
+                    // background-color: #9aa;
+                    // border-radius: 5px;
+
+                    &.cell--selected {
+                        transform: scale(1.2) rotate(10deg);
+                        z-index: 100;
+                        .cell__wrapper {
+                            background-color: #FFACB0;
+                        }
+                    }
+
+                    .cell__wrapper {
+                        cursor: pointer;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border: 1px solid #FFACB0;
+                        background-color: #55C0B799;
+                        border-radius: 5px;
+                        width: calc(100% - var(--cell-padding) * 2);
+                        height: calc(100% - var(--cell-padding) * 2);
+
+                        box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+
+                        &:hover {
+                            transform: scale(1.1);
+                            background-color: #DEDBA499;
+                        }
+
+
+                        transition: all var(--global-delay) ease-in-out;
+
+                        .cell__sprite {
+                            animation: oscillate 2s infinite;
+                            font-size: 1rem;
+
+                        }
+
+                    }
 
                     // transition: all var(--cell-move-duration) ease-in-out;
 
-                    transition: all var(--global-delay) ease-in-out;
 
-                    .cell__sprite {
-                        animation: oscillate 2s infinite;
-                        font-size: 1rem;
-
-                    }
 
                     $emojies: ('🐵','🦁','🐯','🐶','🐱','🐰','🐻','🐨','🐼','🐷');
 
@@ -87,13 +150,7 @@ body {
                     z-index: 100;
                 }
 
-                .cell--selected {
-                    background-color: #f00;
-                }
 
-                .cell--shared {
-                    border: solid 3px #f0f;
-                }
             }
 
 
