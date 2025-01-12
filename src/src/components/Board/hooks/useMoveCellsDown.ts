@@ -15,8 +15,6 @@ export const useMoveCellsDown = ({
     setMoveDownPending,
     setFillEmptyPending,
 }: UseMoveCellsDownProps) => {
-
-
     console.log('%cHANDLE MOVE CELLS DOWN:' + moveDownPending, 'color: #ff0; font-size: 2rem');
 
     if(!moveDownPending) {
@@ -66,5 +64,5 @@ export const useMoveCellsDown = ({
     setMoveDownPending(false);
     setTimeout(() => {
       setFillEmptyPending(true);
-    }, 100);
+    }, 300);
 }
