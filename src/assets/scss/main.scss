@@ -10,7 +10,7 @@
     --board-grid-columns: 5;
     --board-grid-rows: 8;
 
-    --cell-size: 70px;
+    --cell-size: 50px;
 
     --cell-destroy-duration: 500ms;
     --cell-move-duration: 300ms;
@@ -43,7 +43,7 @@ body {
     .application {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        // justify-content: center;
         align-items: center;
         // position: relative;
         height: 100vh;

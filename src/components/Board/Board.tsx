@@ -197,8 +197,6 @@ export const Board: React.FC<BoardProps> = ({
 
 
   const handleSwipe = async (cellDescriptor: CellDescriptor, direction: number) => {
-    handlePlayClick();
-
     // up
     if( direction === 0 ) {
       const aboveCell = getAboveCell(grid, cellDescriptor);
@@ -285,7 +283,7 @@ export const Board: React.FC<BoardProps> = ({
   }
 
   return (
-    <div className="board" onClick={handlePlayClick}>
+    <div className="board" onClick={handlePlayClick} onTouchEnd={handlePlayClick}>
       <audio ref={wowAudioRef}>
         <source src={wowSound} type="audio/mpeg" />
       </audio>
