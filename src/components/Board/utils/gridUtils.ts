@@ -56,6 +56,8 @@ export const getCellsAbove = (grid: CellDescriptor[], cell: CellDescriptor, ) =>
 };
 
 
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
 export const getMatches = (
     grid: CellDescriptor[],

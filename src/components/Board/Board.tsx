@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { useScoreContext } from "../../contexts/scoreContext";
 
-import { getMatches, areCellsAdjacent } from "./utils/gridUtils";
+import { getMatches, areCellsAdjacent, sleep } from "./utils/gridUtils";
 
 import { useInitializeBoard } from "./hooks/useInitializeBoard";
 import { useDestroyCells } from "./hooks/useDestroyCells";
@@ -38,15 +38,11 @@ export const Board: React.FC<BoardProps> = ({
 
   const { grid, setGrid, styles } = useInitializeBoard(gridWidth, gridHeight, possibleValues);
 
-
-  const [globalDelay, setGlobalDelay] = useState<number>(300);
   const [firstCellIndex, setFirstCellIndex] = useState<number | undefined>();
 
   const [matches, setMatches] = useState<CellDescriptor[][]>([]);
 
-
   const [isLocked, setIsLocked] = useState<boolean>(false);
-
   const [destructionPending, setDestructionPending] = useState<boolean>(false);
   const [moveDownPending, setMoveDownPending] = useState<boolean>(false);
   const [fillEmptyPending, setFillEmptyPending] = useState<boolean>(false);
@@ -126,7 +122,7 @@ export const Board: React.FC<BoardProps> = ({
   }, [isLoopFinished]);
 
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
   async function handleMatches() {
 
@@ -136,7 +132,7 @@ export const Board: React.FC<BoardProps> = ({
     if(matches.length) {
       setComboLength(comboLength + 1);
       setMatches(matches);
-      await sleep(globalDelay);
+      await sleep(100);
       setDestructionPending(true);
     }
     else {
@@ -158,6 +154,12 @@ export const Board: React.FC<BoardProps> = ({
     });
   };
 
+  const canSwap = (index1: number, index2: number) => {
+    if(areCellsAdjacent(grid, index1, index2) || 1) {
+      return true;
+    }
+  }
+
 
   const handleClick = (index: number, cellDescriptor: CellDescriptor) => {
     // =======================================
@@ -173,7 +175,7 @@ export const Board: React.FC<BoardProps> = ({
         return;
     }
 
-    if(areCellsAdjacent(grid, firstCellIndex, index) || 1) {
+    if(canSwap(firstCellIndex, index)) {
       const firstCell = grid[firstCellIndex];
       const secondCell = grid[index];
 
