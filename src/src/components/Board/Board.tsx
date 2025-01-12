@@ -13,11 +13,13 @@ import { CellDescriptor } from "../../types/CellDescriptor";
 
 import { Cell } from "../Cell/Cell";
 import { ScoreCounter } from "../ScoreCounter/ScoreCounter";
+import { StatsBar } from "../StatsBar/StatsBar";
 
 
 import { AudioPlayer, AudioPlayerHandle } from "../AudioPlayer/AudioPlayer";
 
 import track01 from "../../../assets/sounds/tracks/01.mp3";
+import wowSound from "../../../assets/sounds/effects/wow.mp3";
 
 type BoardProps = {
     gridWidth: number;
@@ -47,8 +49,22 @@ export const Board: React.FC<BoardProps> = ({
   const [fillEmptyPending, setFillEmptyPending] = useState<boolean>(false);
   const [isLoopFinished, setIsLoopFinished] = useState<boolean>(false);
 
+  const [comboLength, setComboLength] = useState<number>(0);
 
-  const { score, incrementScore, resetScore } = useScoreContext();
+  // const hookDelay: number = 100;
+
+
+  const {
+    score,
+    incrementScore,
+    resetScore,
+    cellsDestroyed,
+    incrementCellsDestroyed,
+    combos,
+    incrementCombos,
+    maxCombosLength,
+    setMaxCombosLength,
+  } = useScoreContext();
 
 
   useEffect(() => {
@@ -67,28 +83,20 @@ export const Board: React.FC<BoardProps> = ({
     destructionPending,
     setDestructionPending,
     setMoveDownPending,
-    globalDelay,
   });
 
   useMoveCellsDown({
-    grid,
     setGrid,
     moveDownPending,
     setMoveDownPending,
     setFillEmptyPending,
-    globalDelay,
   });
 
 
   useFillGrid({
-    grid,
-    gridWidth,
     gridHeight,
-    matchSize,
-    globalDelay,
     possibleValues,
     setGrid,
-    moveDownPending,
     fillEmptyPending,
     setFillEmptyPending,
     setIsLoopFinished,
@@ -102,6 +110,8 @@ export const Board: React.FC<BoardProps> = ({
       return;
     }
 
+    const cellsDestroyed = matches.reduce((acc, match) => acc + match.length, 0);
+    incrementCellsDestroyed(cellsDestroyed);
     handleScores(matches);
     setMatches([]);
 
@@ -115,20 +125,29 @@ export const Board: React.FC<BoardProps> = ({
   }, [isLoopFinished]);
 
 
-  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   async function handleMatches() {
     const matches = getMatches(grid, gridWidth, gridHeight, matchSize);
     if(matches.length) {
+      setComboLength(comboLength + 1);
       setMatches(matches);
-      await delay(globalDelay);
+      await sleep(globalDelay);
       setDestructionPending(true);
+    }
+    else {
+      incrementCombos(Math.max(comboLength - 1, 0));
+      setMaxCombosLength(Math.max(comboLength, 0));
+      if(comboLength > 1) {
+        playWow();
+      }
+      setComboLength(0);
     }
   }
 
   const handleScores = (matches: CellDescriptor[][]) => {
     matches.forEach((match, index) => {
-      incrementScore(10 * match.length * (index + 1));
+      incrementScore(10 * match.length * (index + 1) * (comboLength + 1));
     });
   };
 
@@ -150,7 +169,6 @@ export const Board: React.FC<BoardProps> = ({
       secondCell.coordinates = tempCoordinates;
 
       handleMatches();
-
     }
 
 
@@ -161,15 +179,23 @@ export const Board: React.FC<BoardProps> = ({
 
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
   const handlePlayClick = () => {
-    console.log(audioPlayerRef.current);
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.play();
-    }
+    // if (audioPlayerRef.current) {
+    //   audioPlayerRef.current.play();
+    // }
   };
 
+  const wowAudioRef = useRef<HTMLAudioElement>(null);
+  const playWow = () => {
+    if (wowAudioRef.current) {
+      wowAudioRef.current.play();
+    }
+  }
 
   return (
     <div className="board" onClick={handlePlayClick}>
+      <audio ref={wowAudioRef}>
+        <source src={wowSound} type="audio/mpeg" />
+      </audio>
 
       <header>
         <div>
@@ -196,6 +222,9 @@ export const Board: React.FC<BoardProps> = ({
               }
           </div>
       )}
+      <footer>
+        <StatsBar />
+      </footer>
     </div>
   );
 }

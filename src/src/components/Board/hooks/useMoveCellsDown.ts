@@ -3,21 +3,17 @@ import { getCellsAbove } from "../utils/gridUtils";
 
 
 type UseMoveCellsDownProps = {
-  grid: CellDescriptor[];
   setGrid: React.Dispatch<React.SetStateAction<CellDescriptor[]>>;
   moveDownPending: boolean;
   setMoveDownPending: React.Dispatch<React.SetStateAction<boolean>>;
   setFillEmptyPending: React.Dispatch<React.SetStateAction<boolean>>;
-  globalDelay: number;
 };
 
 export const useMoveCellsDown = ({
-    grid,
     setGrid,
     moveDownPending,
     setMoveDownPending,
     setFillEmptyPending,
-    globalDelay,
 }: UseMoveCellsDownProps) => {
 
 
@@ -70,5 +66,5 @@ export const useMoveCellsDown = ({
     setMoveDownPending(false);
     setTimeout(() => {
       setFillEmptyPending(true);
-    }, globalDelay);
+    }, 100);
 }

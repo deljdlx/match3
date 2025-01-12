@@ -9,7 +9,6 @@ type UseDestroyCellsProps = {
   destructionPending: boolean;
   setDestructionPending: React.Dispatch<React.SetStateAction<boolean>>;
   setMoveDownPending: React.Dispatch<React.SetStateAction<boolean>>;
-  globalDelay: number;
 };
 
 /**
@@ -23,7 +22,6 @@ export const useDestroyCells = ({
   destructionPending,
   setDestructionPending,
   setMoveDownPending,
-  globalDelay,
 }: UseDestroyCellsProps) => {
   const handleDestroy = useCallback(() => {
 
@@ -54,8 +52,8 @@ export const useDestroyCells = ({
     // Planifie l'étape suivante (déplacement des cellules)
     setTimeout(() => {
       setMoveDownPending(true);
-    }, globalDelay);
-  }, [destructionPending, grid, matches, setGrid, setMatches, setDestructionPending, setMoveDownPending, globalDelay]);
+    }, 100);
+  }, [destructionPending, grid, matches, setGrid, setMatches, setDestructionPending, setMoveDownPending, ]);
 
   // Effect principal pour observer `destructionPending`
   useEffect(() => {

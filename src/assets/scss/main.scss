@@ -43,11 +43,7 @@ body {
 
         .board {
             margin: auto;
-            // margin-top: 50px;
-            // border: solid 3px #f0f;
             position: relative;
-            height: calc(var(--cell-size) * var(--board-grid-rows));
-            width: calc(var(--cell-size) * var(--board-grid-columns));
 
             header {
                 display: flex;
@@ -62,6 +58,28 @@ body {
                 }
             }
 
+            .stats-bar {
+                margin: 10px 0;
+                display: flex;
+                // justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                .item {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 4px 8px;
+                    border-radius: 16px;
+                    background-color: #FFACB0;
+                    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+                    font-size: 1.5rem;
+                    .icon {
+                        font-size: 1.5rem;
+                        margin-right: 5px;
+                    }
+                }
+            }
+
 
             .score-counter {
                 color: #FDA7B4;
@@ -71,6 +89,8 @@ body {
 
             .grid {
                 position: relative;
+                height: calc(var(--cell-size) * var(--board-grid-rows));
+                width: calc(var(--cell-size) * var(--board-grid-columns));
 
                 .cell {
 

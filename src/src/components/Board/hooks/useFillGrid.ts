@@ -4,17 +4,9 @@ import { getFirstCellOfColumn, generateRandomValue, getMatches } from "../utils/
 
 
 type UseFillGridProps = {
-    grid: CellDescriptor[];
-    gridWidth: number;
     gridHeight: number;
-    matchSize: number;
-    globalDelay: number;
-
-
     possibleValues: number;
-
     setGrid: React.Dispatch<React.SetStateAction<CellDescriptor[]>>;
-    moveDownPending: boolean;
     fillEmptyPending: boolean;
     setFillEmptyPending: React.Dispatch<React.SetStateAction<boolean>>;
     setIsLoopFinished: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,14 +14,9 @@ type UseFillGridProps = {
 
 
 export const useFillGrid = ({
-    grid,
-    gridWidth,
     gridHeight,
-    matchSize,
-    globalDelay,
     possibleValues,
     setGrid,
-    moveDownPending,
     fillEmptyPending,
     setFillEmptyPending,
     setIsLoopFinished,
@@ -37,7 +24,7 @@ export const useFillGrid = ({
 
 
     console.log('%cHANDLE FILL CELLS', 'color: #0f0; font-size: 2rem');
-    if(moveDownPending || !fillEmptyPending) {
+    if(!fillEmptyPending) {
       return;
     }
 
@@ -65,7 +52,7 @@ export const useFillGrid = ({
     setFillEmptyPending(false);
     setTimeout(() => {
         setIsLoopFinished(true);
-    }, globalDelay);
+    }, 100);
 
 }
 
